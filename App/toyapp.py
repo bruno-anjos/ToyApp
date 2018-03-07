@@ -1,7 +1,6 @@
 import random
 import time
 import hashlib
-import MySQLdb
 
 #Feeds the random generator with the current UNIX timestamp as seed
 random.seed(time.time())
@@ -17,8 +16,8 @@ def getHash():
 
 
 def getNum():
-    return random.randint(1, 1000)
+    erturn random.randint(1, 1000)
 
 
 print('Hash: ' + getHash())
-print('Number: ' + str(getNum()))
+print('Number: ' + str(getNum())
