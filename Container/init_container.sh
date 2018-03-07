@@ -1,0 +1,22 @@
+#!/bin/bash
+
+#echo deb http://http.debian.net/debian jessie-backports main >> /etc/apt/sources.list
+
+echo "--------------------------UPDATING----------------------------"
+apt-get update
+
+echo "--------------------------DOWNLOADING PYTOHN----------------------------"
+apt-get install -y python3.5
+
+
+echo "--------------------------DOWNLOADING python3-mysqldb----------------------------"
+apt-get install -y python3-mysqldb
+
+echo "--------------------------DOWNLOADING mysql-server----------------------------"
+apt-get install -y mysql-server
+
+
+echo "--------------------------mysql-client----------------------------"
+apt-get install -y mysql-client
+
+
