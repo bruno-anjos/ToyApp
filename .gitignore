@@ -1,3 +1,5 @@
 
 \.idea/
 .DS_Store
+logs/image_name.txt
+logs/install_log.txt
