@@ -5,7 +5,7 @@
 echo "--------------------------UPDATING----------------------------"
 apt-get update
 
-echo "--------------------------DOWNLOADING PYTOHN----------------------------"
+echo "--------------------------DOWNLOADING PYTHON----------------------------"
 apt-get install -y python3.5
 
 
@@ -16,7 +16,7 @@ echo "--------------------------DOWNLOADING mysql-server------------------------
 apt-get install -y mysql-server
 
 
-echo "--------------------------mysql-client----------------------------"
+echo "--------------------------DOWNLOADING mysql-client----------------------------"
 apt-get install -y mysql-client
 
 
