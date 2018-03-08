@@ -1,9 +1,47 @@
 import random
 import time
 import hashlib
+import sys
 
-#Feeds the random generator with the current UNIX timestamp as seed
-random.seed(time.time())
+
+CONST_USAGE = "Usage: [insertions per second] [averages per second] [timeout in seconds]"
+
+
+
+def main(argv):
+
+	#Feeds the random generator with the current UNIX timestamp as seed
+	random.seed(time.time())
+
+	if len(argv) != 4:
+		print(CONST_USAGE)
+		sys.exit(1)
+
+	insertPerMin = argv[1]
+	avgPerMin = argv[2]
+	timeout = int(argv[3]) * 10000
+
+
+
+	print("starting main loop")
+	mainLoop(insertPerMin, avgPerMin, timeout)
+
+	sys.exit(0)
+	
+
+# main script loop, logs start time and runs until timeout expires
+# every x seconds will insert a tuple into the database
+def mainLoop(insertPerMin, avgPerMin, timeout):
+
+	startTime = time.time()
+
+	while(True):
+
+		if startTime - time.time() > timeout :
+			break 
+
+
+
 
 #Returns a hash using SHA256 algorithm and the current UNIX timestamp
 #plus a random float number to add even more randomness to the timestamp
@@ -14,10 +52,21 @@ def getHash():
     hashKey.update(str(data).encode('utf-8'))
     return hashKey.hexdigest()
 
+#generates a pseudo-random number between the specified ranges
+def getNum(min, max):
+    return random.randint(min, max)
 
-def getNum():
-    erturn random.randint(1, 1000)
+#inserts the @param key and @param value into the database
+def insertIntoDB(key, value):
+	return None
+
+# gets the average from all the tuples and returns it
+def getAverage():
+	return None
 
 
-print('Hash: ' + getHash())
-print('Number: ' + str(getNum())
+#conventional stuff, dont ask me.
+if __name__ == '__main__':
+	main(sys.argv)
+
+
