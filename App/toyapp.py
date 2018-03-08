@@ -13,10 +13,17 @@ CONST_DB_USER = "root"
 CONST_DB_PASSWORD = "toor"
 CONST_DB_NAME = "dummy_db"
 CONST_DB_TABLENAME = "dummy_table"
+CONST_DB_NUM_COL_NAME = "num"
+
+CONST_MIN_NUM = 1
+CONST_MAX_NUM = 100
+
 
 def main(argv):
     # Feeds the random generator with the current UNIX timestamp as seed
     random.seed(time.time())
+
+    testDatabase()
 
     if len(argv) != 3:
         print(CONST_USAGE)
@@ -44,6 +51,7 @@ def mainLoop(insertPerMin, timeout):
     sleepTime = getSleepTime(insertPerMin)
 
     db = setupDatabase()
+    db.autocommit(True)
     cursor = db.cursor()
 
     while (True):
@@ -53,8 +61,10 @@ def mainLoop(insertPerMin, timeout):
             break
 
         key = getHash()
-        value = getNum()
+        value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
         insertIntoDB(cursor, key, value)
+
+    db.close()
 
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
@@ -67,19 +77,16 @@ def getHash():
     return hashKey.hexdigest()
 
 
-# generates a pseudo-random number between the specified ranges
-def getNum(min, max):
-    return random.randint(min, max)
-
-
 # inserts the @param key and @param value into the database
 def insertIntoDB(cursor, key, value):
-    cursor.execute("INSERT INTO " + CONST_DB_TABLENAME + " VALUES (\"" + key + "\", \"" + value + "\")")
+    cursor.execute("INSERT INTO " + CONST_DB_TABLENAME + " VALUES (\"" + key + "\", " + str(value) + ")")
 
 
 # gets the average from all the tuples in the database and returns it
 def getAverage(cursor):
-    cursor.execute("SELECT num FROM")
+    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
+    for row in cursor.fetchall():
+        print(row[0])
 
 
 # connects to the database
@@ -89,6 +96,15 @@ def setupDatabase():
                            passwd=CONST_DB_PASSWORD,
                            db=CONST_DB_NAME)
 
+def testDatabase():
+    db = setupDatabase()
+    db.autocommit(True)
+    cursor = db.cursor()
+    key = getHash()
+    value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
+    insertIntoDB(cursor, key, value)
+    getAverage(cursor)
+    sys.exit(0)
 
 # conventional stuff, dont ask me.
 if __name__ == '__main__':
