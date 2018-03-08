@@ -56,7 +56,7 @@ def mainLoop(insertPerMin, timeout):
 
     while (True):
 
-        time.sleep(insertPerMin)
+        time.sleep(sleepTime)
         if startTime - time.time() > timeout:
             break
 
