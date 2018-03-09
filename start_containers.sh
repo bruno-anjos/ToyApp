@@ -1,4 +1,5 @@
 #!/bin/bash
+docker rm -f $(docker ps -a -q) # removes all containers
 
 nContainers=$1 # the number of containers to open
 insPerMin=$2 # number of insertions per minute in the python app

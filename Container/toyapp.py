@@ -7,7 +7,7 @@ import MySQLdb
 # CONST_USAGE = "Usage: [insertions per second] [averages per second] [timeout in seconds]"
 
 
-CONST_USAGE = "Usage: [insertions per second] [timeout in seconds]"
+CONST_USAGE = "Usage: [insertions per minute] [timeout in minutes]"
 CONST_DB_HOST = "localhost"
 CONST_DB_USER = "root"
 CONST_DB_PASSWORD = "toor"
@@ -32,9 +32,9 @@ def main(argv):
         sys.exit(1)
 
     insertPerMin = argv[1]
-    timeout = int(argv[2]) * 10000
+    timeout = int(argv[2])
 
-    print("starting main loop")
+    print("Starting main loop")
     mainLoop(insertPerMin, timeout)
 
     sys.exit(0)
@@ -43,7 +43,7 @@ def main(argv):
 # Converts @param timesPerMin to how much time to wait in order to 
 # have @param timesPerMin happen that many times per minute
 def getSleepTime(timesPerMin):
-    return 60000 / int(timesPerMin)
+    return 60 / int(timesPerMin)
 
 
 # main script loop, logs start time and runs until timeout expires
@@ -56,16 +56,18 @@ def mainLoop(insertPerMin, timeout):
     cursor = db.cursor()
 
     while (True):
-
-        time.sleep(sleepTime)
-        if startTime - time.time() > timeout:
-            break
-
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
         insertIntoDB(cursor, key, value)
+        print("Inserted \"" + key + "\" with value " + str(value))
+
+        print("Will sleep " + str(sleepTime) + " seconds.")
+        time.sleep(sleepTime)
+        if time.time() - startTime > timeout:
+            break
 
     db.close()
+    sys.exit(0)
 
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
@@ -92,10 +94,10 @@ def getAverage(cursor):
 
 # connects to the database
 def setupDatabase():
-    db =MySQLdb.connect(host=CONST_DB_HOST,
-                           user=CONST_DB_USER,
-                           passwd=CONST_DB_PASSWORD,
-                           db=CONST_DB_NAME)
+    db = MySQLdb.connect(host=CONST_DB_HOST,
+                         user=CONST_DB_USER,
+                         passwd=CONST_DB_PASSWORD,
+                         db=CONST_DB_NAME)
     db.autocommit(True)
     return db
 
