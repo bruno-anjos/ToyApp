@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "Starting mysql service"
 service mysql start
 echo "initializing database"
