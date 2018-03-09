@@ -43,7 +43,7 @@ def main(argv):
 # Converts @param timesPerMin to how much time to wait in order to 
 # have @param timesPerMin happen that many times per minute
 def getSleepTime(timesPerMin):
-    return 60000 / timesPerMin
+    return 60000 / int(timesPerMin)
 
 
 # main script loop, logs start time and runs until timeout expires
@@ -53,7 +53,6 @@ def mainLoop(insertPerMin, timeout):
     sleepTime = getSleepTime(insertPerMin)
 
     db = setupDatabase()
-    db.autocommit(True)
     cursor = db.cursor()
 
     while (True):
@@ -98,7 +97,7 @@ def setupDatabase():
                            passwd=CONST_DB_PASSWORD,
                            db=CONST_DB_NAME)
     db.autocommit(True)
-    return 
+    return db
 
 def testDatabase():
     db = setupDatabase()
