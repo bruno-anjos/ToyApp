@@ -20,17 +20,19 @@ CONST_MAX_NUM = 100
 
 
 def main(argv):
+
+    print("Starting toyapp")
     # Feeds the random generator with the current UNIX timestamp as seed
     random.seed(time.time())
 
-    testDatabase()
+    #testDatabase()
 
     if len(argv) != 3:
         print(CONST_USAGE)
         sys.exit(1)
 
     insertPerMin = argv[1]
-    timeout = int(argv[3]) * 10000
+    timeout = int(argv[2]) * 10000
 
     print("starting main loop")
     mainLoop(insertPerMin, timeout)
@@ -91,14 +93,15 @@ def getAverage(cursor):
 
 # connects to the database
 def setupDatabase():
-    return MySQLdb.connect(host=CONST_DB_HOST,
+    db =MySQLdb.connect(host=CONST_DB_HOST,
                            user=CONST_DB_USER,
                            passwd=CONST_DB_PASSWORD,
                            db=CONST_DB_NAME)
+    db.autocommit(True)
+    return 
 
 def testDatabase():
     db = setupDatabase()
-    db.autocommit(True)
     cursor = db.cursor()
     key = getHash()
     value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)

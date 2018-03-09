@@ -5,7 +5,7 @@ FROM openjdk:8
 # Set the working directory to /app
 WORKDIR /app
 
-ADD database_creation.sql database_creation.sql
+ADD DB_script.sql DB_script.sql
 ADD toyapp.py toyapp.py
 ADD init_container.sh init_container.sh
 
