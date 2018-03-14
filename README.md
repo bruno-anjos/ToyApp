@@ -9,9 +9,31 @@ A aplicação deve ser independente do ambiente em que será utilizada (containe
 
 ## Funcionamento da Aplicação
 
-### Início
+De seguida serão apresentados pedaços de pseudocódigo com alguma semelhança a python para demonstrar e esclarecer o funcionamento da aplicação. Estarão estruturados numa fase de **Inicialização**, **Ciclo** e **Finalização**.
 
-A aplicação tem como argumentos o número de inserções na base de dados por segundo e o número máximo de inserções, utilizado como condição de paragem.
+### Inicialização
+
+Na inicialização da aplicação têm de ser passados como argumentos o número de inserções na base de dados por minuto, o número máximo de inserções (*condição de paragem*) e o número de clientes instanciados:
+
 ```console
-user@user-pc ~ $ python3 toyapp.py 
+user@user-pc ~ $ python3 toyapp.py n_inserts_minute n_max_inserts n_clients
 ```
+Como os ambientes não serão todos lançados ao mesmo tempo, existe uma necessidade de serem sincronizados antes de começarem a ser feitas inserções nas bases de dados de outras aplicações na rede, de forma a garantir que os serviços já estão operacionais e prontos a receber pedidos. 
+É então usada uma chave (*num_online*) na base de dados de cada uma das aplicações que será incrementada pelos restantes clientes, e que apenas quando for igual ao número de clientes instanciados, permitirá à aplicação prosseguir, garantindo assim alguma sincronização entre todos os clientes na rede, ou seja, um cliente não só tem de incrementar o valor dessa chave em todos os outros clientes, como também tem que aguardar que a sua chave fique com o valor esperado:
+
+```python
+#Increment others
+for c in connections:
+	c.insert(UPDATE table_name SET num_online = num_online + 1;)
+
+#Wait for others to increment
+sync = False
+while not sync:
+	n = db.query(SELECT num_online FROM table_name)
+	if n == n_clients
+		sync = True
+	else
+		sleep(1)
+```
+
+Depois desta inicialização temos então alguma garantia que os clientes ficaram sincronizados.
