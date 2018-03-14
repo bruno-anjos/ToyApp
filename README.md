@@ -13,5 +13,5 @@ A aplicação deve ser independente do ambiente em que será utilizada (containe
 
 A aplicação tem como argumentos o número de inserções na base de dados por segundo e o número máximo de inserções, utilizado como condição de paragem.
 ```console
-user@user-pc$ python3 toyapp.py 
+user@user-pc ~ $ python3 toyapp.py 
 ```
