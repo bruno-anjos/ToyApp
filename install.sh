@@ -6,7 +6,7 @@ touch logs/install_log.log #creates a new log file
 touch logs/image_name.log #creates a log to have the image name
 
 echo "Building Docker image"
-docker build Container > logs/install_log.log # redirects all outpur to the logs file
+docker build Container > logs/install_log.log # redirects all output to the logs file
 cat logs/install_log.log | grep "Successfully built" #just displays the success message
 
 #does some magic stuff to get the image name into the file "image_name"

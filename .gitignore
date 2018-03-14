@@ -4,3 +4,5 @@
 logs/image_name.txt
 logs/install_log.txt
 *.log
+
+Container/teste\.py
