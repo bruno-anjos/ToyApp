@@ -37,3 +37,43 @@ while not sync:
 ```
 
 Depois desta inicialização temos então alguma garantia que os clientes ficaram sincronizados.
+
+
+
+###ciclo
+
+Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com constantes inserções nas diversas bases de dados de cada client.
+
+```pseudocode
+
+wait_time = Seconds_in_a_min / n_inserts_minute
+
+While (num_inserts < num_inserted):
+	wait_time = wait_time - time_passed_inserting_last_batch
+
+	if(wait_time has passed):
+
+		key = sha256(random_number)
+		value = random_number
+
+		for(client in all_clients):
+			insert_in_database(client , key, value)
+
+		collect_analytics()
+    
+
+```
+
+nota 1: os dados a recolher ainda estão por definir
+nota 2: as inserções nos outros clientes poderão ser em "batches" (conjuntos de tuplos guardados numa tabela auxiliar) ou 
+		a inserção nos outros clientes é feita 1 a 1 (este ponto está por definir)
+
+
+### Finalização
+
+
+Na fase final do programa, este deve interpretar os dados recolhidos durante a execução (estes ainda estão por definir) de
+modo a efetuar uma análise estatística dos mesmos.
+
+nota: a maneira de efetuar a análise estatística dos dados ainda está por definir
+
