@@ -1,4 +1,10 @@
 
+### TODO
+
+	1 - alterar scripts de iniciação dos containers
+	2 - modificar script de python para inserir em N - 1 Bases de dados remotas e 1 local
+	3 - criar script para inicializar os containers com IP's predefenidos
+
 ## Objectivos da Aplicação
 
 A aplicação que aqui vai ser desenvolvida tem como objectivo testar a diferença de desempenho de replicação de uma base de dados numa rede containers e numa rede de máquinas virtuais. Para tal vai ser usado o ambiente Docker para a componente dos containers, e software da VMware para as máquinas virtuais.
@@ -38,8 +44,6 @@ while not sync:
 
 Depois desta inicialização temos então alguma garantia que os clientes ficaram sincronizados.
 
-
-
 ###ciclo
 
 Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com constantes inserções nas diversas bases de dados de cada client.
@@ -68,12 +72,13 @@ nota 1: os dados a recolher ainda estão por definir
 nota 2: as inserções nos outros clientes poderão ser em "batches" (conjuntos de tuplos guardados numa tabela auxiliar) ou 
 		a inserção nos outros clientes é feita 1 a 1 (este ponto está por definir)
 
-
 ### Finalização
-
 
 Na fase final do programa, este deve interpretar os dados recolhidos durante a execução (estes ainda estão por definir) de
 modo a efetuar uma análise estatística dos mesmos.
 
 nota: a maneira de efetuar a análise estatística dos dados ainda está por definir
+
+
+
 
