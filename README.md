@@ -52,7 +52,7 @@ Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com cons
 
 wait_time = Seconds_in_a_min / n_inserts_minute
 
-While num_inserts < num_inserted:
+while num_inserts < num_inserted:
 	wait_time = wait_time - time_passed_inserting_last_batch
 
 	if wait_time has passed:
