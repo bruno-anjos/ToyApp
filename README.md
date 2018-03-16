@@ -44,7 +44,7 @@ while not sync:
 
 Depois desta inicialização temos então alguma garantia que os clientes ficaram sincronizados.
 
-###ciclo
+### Ciclo
 
 Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com constantes inserções nas diversas bases de dados de cada client.
 
@@ -67,9 +67,9 @@ while num_inserts < num_inserted:
     
 
 ```
-
-nota 1: os dados a recolher ainda estão por definir
-nota 2: as inserções nos outros clientes poderão ser em "batches" (conjuntos de tuplos guardados numa tabela auxiliar) ou 
+**TODO**
+  * definir os dados a recolher
+  * as inserções nos outros clientes poderão ser em "batches" (conjuntos de tuplos guardados numa tabela auxiliar) ou 
 		a inserção nos outros clientes é feita 1 a 1 (este ponto está por definir)
 
 ### Finalização
