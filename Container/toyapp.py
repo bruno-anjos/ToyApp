@@ -32,7 +32,7 @@ def main(argv):
         sys.exit(1)
 
     insertPerMin = argv[1]
-    timeout = int(argv[2])
+    maxInsertions = int(argv[2])
 
     print("Starting main loop")
     mainLoop(insertPerMin, timeout)
@@ -46,25 +46,29 @@ def getSleepTime(timesPerMin):
     return 60 / int(timesPerMin)
 
 
-# main script loop, logs start time and runs until timeout expires
+# main script loop, runs until it has inserted @arg maxInsertions tuples
 # every x seconds will insert a tuple into the database
-def mainLoop(insertPerMin, timeout):
+# where x is how many times it inserts per minute
+def mainLoop(insertPerMin, maxInsertions):
     startTime = time.time()
     sleepTime = getSleepTime(insertPerMin)
-
+    counter = 0;
     db = setupDatabase()
     cursor = db.cursor()
 
     while (True):
+        insertionTime = time.time()
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
         insertIntoDB(cursor, key, value)
         print("Inserted \"" + key + "\" with value " + str(value))
 
         print("Will sleep " + str(sleepTime) + " seconds.")
-        time.sleep(sleepTime)
-        if time.time() - startTime > timeout:
-            break
+        time.sleep(sleepTime - insertionTime)
+        counter+=1
+
+        if counter > maxInsertions:
+            break;
 
     db.close()
     sys.exit(0)
