@@ -48,19 +48,19 @@ Depois desta inicialização temos então alguma garantia que os clientes ficara
 
 Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com constantes inserções nas diversas bases de dados de cada client.
 
-```pseudocode
+```python
 
 wait_time = Seconds_in_a_min / n_inserts_minute
 
-While (num_inserts < num_inserted):
+While num_inserts < num_inserted:
 	wait_time = wait_time - time_passed_inserting_last_batch
 
-	if(wait_time has passed):
+	if wait_time has passed:
 
 		key = sha256(random_number)
 		value = random_number
 
-		for(client in all_clients):
+		for client in all_clients:
 			insert_in_database(client , key, value)
 
 		collect_analytics()
