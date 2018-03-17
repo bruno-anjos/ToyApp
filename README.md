@@ -19,10 +19,10 @@ De seguida serão apresentados pedaços de pseudocódigo com alguma semelhança 
 
 ### Inicialização
 
-Na inicialização da aplicação têm de ser passados como argumentos o número de inserções na base de dados por minuto, o número máximo de inserções (*condição de paragem*) e o número de clientes instanciados:
+Na inicialização da aplicação têm de ser passados como argumentos o número de inserções na base de dados por minuto, o número máximo de inserções (*condição de paragem*), o número de clientes instanciados, o endereço do primeiro cliente lançado (os restantes são calculdados) e o número de tuplos que devem ser inseridos de cada vez nas bases de dados remotas:
 
 ```console
-user@user-pc ~ $ python3 toyapp.py n_inserts_minute n_max_inserts n_clients
+user@user-pc ~ $ python3 toyapp.py n_inserts_minute n_max_inserts n_clients starting_ip batch_size
 ```
 Como os ambientes não serão todos lançados ao mesmo tempo, existe uma necessidade de serem sincronizados antes de começarem a ser feitas inserções nas bases de dados de outras aplicações na rede, de forma a garantir que os serviços já estão operacionais e prontos a receber pedidos. 
 É então usada uma chave (*num_online*) na base de dados de cada uma das aplicações que será incrementada pelos restantes clientes, e que apenas quando for igual ao número de clientes instanciados, permitirá à aplicação prosseguir, garantindo assim alguma sincronização entre todos os clientes na rede, ou seja, um cliente não só tem de incrementar o valor dessa chave em todos os outros clientes, como também tem que aguardar que a sua chave fique com o valor esperado:
