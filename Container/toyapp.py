@@ -174,29 +174,44 @@ def sync_dbs(db, numClients, remote_dbs):
     synced = False
     num = 0
 
-    # Query used to insert the synced value in local database
+    # Query used to update the synced value in remote databases
     insertString = "INSERT INTO " + CONST_DB_SYNCED_TABLENAME + " VALUES "
     insertString += ("(\"synced\", " + str(1) + ")")
-
-    # Query used to update the synced value in remote databases
     updateString = CONST_DB_NUM_COL_NAME + "=" + CONST_DB_NUM_COL_NAME + "+1"
-
-    # Insert in local database
-    db.cursor().execute(insertString)
-
-    # Updates value in remote databases
-    for rdb in remote_dbs:
-        rdb.cursor().execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
 
     # Guarantees transaction isolation level allows the correct read
     cursor = db.cursor()
     cursor.execute("set session transaction isolation level read committed")
 
+    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+    fetchedValues = cursor.fetchall();
+
+    # Insert in local database
+    print("Decision: " + str(fetchedValues))
+    if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
+        cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
+    else :
+        cursor.execute(insertString)
+
+    # Updates value in remote databases
+    for rdb in remote_dbs:
+        rdb_cursor = rdb.cursor();
+        rdb_cursor.execute("set session transaction isolation level read committed")
+        rdb_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+        fetchedValues = rdb_cursor.fetchall();
+        if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
+            rdb_cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
+        else:
+            rdb_cursor.execute(insertString)
+
     # Waits till current synced value gets incremented by all other clients. Checks every second.
     while not synced:
         cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-        num = cursor.fetchall()[0][0]
-        print(str(num))
+        fetchedValues = cursor.fetchall()
+        print(fetchedValues)
+        if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0:
+            num = fetchedValues[0][0]
+            print(str(num))
         if num == numClients:
             synced = True
         else:
