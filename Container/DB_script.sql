@@ -1,4 +1,10 @@
+CREATE USER 'username'@'localhost' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'localhost' WITH GRANT OPTION;
+CREATE USER 'username'@'%' IDENTIFIED BY 'password';
+GRANT ALL PRIVILEGES ON *.* TO 'username'@'%' WITH GRANT OPTION;
+FLUSH PRIVILEGES;
 drop database if exists dummy_db;
 create database dummy_db;
 use dummy_db;
 create table dummy_table(hash varchar(64), num int);
+create table synced_table(synced varchar(64), num int);

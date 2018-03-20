@@ -2,20 +2,22 @@ import random
 import time
 import hashlib
 import sys
+
 import MySQLdb
 import ipaddress
+import socket
 from collections import deque
 
-# CONST_USAGE = "Usage: [insertions per second] [averages per second] [timeout in seconds]"
-
-
+# Constants used throught the program
 CONST_USAGE = "Usage: python3 toyapp.py [insertions per minute] [max insertions] [number of clients] [starting ip] [batch size]"
 CONST_DB_HOST = "localhost"
-CONST_DB_USER = "root"
-CONST_DB_PASSWORD = "toor"
+CONST_DB_USER = "username"
+CONST_DB_PASSWORD = "password"
 CONST_DB_NAME = "dummy_db"
 CONST_DB_TABLENAME = "dummy_table"
+CONST_DB_SYNCED_TABLENAME = "synced_table"
 CONST_DB_NUM_COL_NAME = "num"
+CONST_DB_SYNCED_COL_NAME = "synced"
 
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
@@ -30,10 +32,12 @@ def main(argv):
 
     #testDatabase()
 
-    if len(argv) != 4:
+    if len(argv) != 6:
+        print(argv)
         print(CONST_USAGE)
         sys.exit(1)
 
+    # Get starting parameters
     insertPerMin = int(argv[1])
     maxInsertions = int(argv[2])
     numClients = int(argv[3])
@@ -54,14 +58,18 @@ def getSleepTime(timesPerMin):
 
 # main script loop, runs until it has inserted @arg maxInsertions tuples
 # every x seconds will insert a tuple into the database
-# where x is how many times it inserts per minute
 def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     startTime = time.time()
     sleepTime = getSleepTime(insertPerMin)
     counter = 0
     db = setupDatabase(CONST_DB_HOST)
-    remote_dbs = init_db_connections(startingIP, numClients)
+    ip_list = build_ip_list(startingIP, numClients)
+    remote_dbs = init_db_connections(startingIP, numClients, ip_list)
+    print("Remote connections: " + str(remote_dbs))
     queuedInserts = deque([])
+
+    # Guarantees everyone is synced
+    sync_dbs(db, numClients, remote_dbs)
 
     while counter < maxInsertions:
         # Gets data to insert
@@ -73,18 +81,20 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         insertIntoDB(db.cursor(), [(key, value)])
         afterInsertionTime = time.time()
         timeTook = afterInsertionTime - insertionTime
-        print("Inserted \"" + key + "\" with value " + str(value) + " and took " + round(timeTook, 2) + " seconds")
+        print("Inserted \"" + key + "\" with value " + str(value) + " and took " + str(round(timeTook, 2)) + " seconds")
 
         # Adds to queue
         queuedInserts.append((key, value))
 
-        # Checks if need to flush queue
+        # Checks if need to flush queue to remote DBs
         if len(queuedInserts) == batchSize:
             insertionTime = time.time()
             for rdb in remote_dbs:
                 insertIntoDB(rdb.cursor(), queuedInserts)
             afterInsertionTime = time.time()
-            print("Took " + (afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
+            while queuedInserts:
+                queuedInserts.pop()
+            print("Took " + str(afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
 
         # Sleeps remaining time
         print("Will sleep " + str(sleepTime) + " seconds.")
@@ -108,7 +118,7 @@ def getHash():
 # inserts the @param key and @param value into the database
 def insertIntoDB(cursor, values):
     insertString = "INSERT INTO " + CONST_DB_TABLENAME + " VALUES "
-    insertString += ("(\"" + values[0] + "\", " + str(values[1]) + ")")
+    insertString += ("(\"" + str(values[0][0]) + "\", " + str(values[0][1]) + ")")
 
     iterValues = iter(values)
     next(iterValues)
@@ -136,13 +146,70 @@ def setupDatabase(ip):
     return db
 
 # Starts connections to the other clients databases and stores the DBs in a list
-def init_db_connections(startingIP, numClients):
+def init_db_connections(startingIP, numClients, ip_list):
     remote_dbs = []
 
     for i in range(1, numClients):
-        remote_dbs.append(setupDatabase(startingIP + i))
+        remote_dbs.append(setupDatabase(ip_list[i-1]))
 
     return remote_dbs
+
+# Builds a list with the other clients IPs (this only works based on an incremental IP system)
+def build_ip_list(startingIP, numClients):
+    localIP = get_ip_address()
+    ip_list = []
+
+    # Inserts all IPs except own IP
+    for i in range(0, numClients):
+        if (startingIP + i) == localIP:
+            continue
+        else:
+            ip_list.append(startingIP + i)
+
+    return ip_list
+
+
+# Syncs the clients to guarantee that all the databases are initiated
+def sync_dbs(db, numClients, remote_dbs):
+    synced = False
+    num = 0
+
+    # Query used to insert the synced value in local database
+    insertString = "INSERT INTO " + CONST_DB_SYNCED_TABLENAME + " VALUES "
+    insertString += ("(\"synced\", " + str(1) + ")")
+
+    # Query used to update the synced value in remote databases
+    updateString = CONST_DB_NUM_COL_NAME + "=" + CONST_DB_NUM_COL_NAME + "+1"
+
+    # Insert in local database
+    db.cursor().execute(insertString)
+
+    # Updates value in remote databases
+    for rdb in remote_dbs:
+        rdb.cursor().execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
+
+    # Guarantees transaction isolation level allows the correct read
+    cursor = db.cursor()
+    cursor.execute("set session transaction isolation level read committed")
+
+    # Waits till current synced value gets incremented by all other clients. Checks every second.
+    while not synced:
+        cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+        num = cursor.fetchall()[0][0]
+        print(str(num))
+        if num == numClients:
+            synced = True
+        else:
+            time.sleep(1)
+
+
+# Gets own IP address
+def get_ip_address():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s.connect(("8.8.8.8", 80))
+    ip = ipaddress.ip_address(s.getsockname()[0])
+    s.close()
+    return ip
 
 # Tests local database
 def testDatabase():
