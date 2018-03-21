@@ -9,7 +9,7 @@ import socket
 from collections import deque
 
 # Constants used throught the program
-CONST_USAGE = "Usage: python3 toyapp.py [insertions per minute] [max insertions] [number of clients] [starting ip] [batch size]"
+CONST_USAGE = "Usage: python3 toyapp.py insertions_per_minute max_insertions number_of_clients starting_ip batch_size"
 CONST_DB_HOST = "localhost"
 CONST_DB_USER = "username"
 CONST_DB_PASSWORD = "password"
@@ -22,20 +22,21 @@ CONST_DB_SYNCED_COL_NAME = "synced"
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
-
+DEBUG_MODE = False
 
 def main(argv):
-
     print("Starting toyapp")
     # Feeds the random generator with the current UNIX timestamp as seed
     random.seed(time.time())
 
-    #testDatabase()
-
-    if len(argv) != 6:
+    if len(argv) < 6:
         print(argv)
         print(CONST_USAGE)
         sys.exit(1)
+
+    elif len(argv) == 7 and str(argv[6]).lower() == "debug":
+        global DEBUG_MODE
+        DEBUG_MODE = True
 
     # Get starting parameters
     insertPerMin = int(argv[1])
@@ -44,7 +45,8 @@ def main(argv):
     startingIP = ipaddress.ip_address(argv[4])
     batchSize = int(argv[5])
 
-    print("Starting main loop")
+    if DEBUG_MODE:
+        print("[DEBUG] Starting main loop")
     mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize)
 
     sys.exit(0)
@@ -60,16 +62,26 @@ def getSleepTime(timesPerMin):
 # every x seconds will insert a tuple into the database
 def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     startTime = time.time()
-    sleepTime = getSleepTime(insertPerMin)
+
+    if DEBUG_MODE:
+        sleepTime = getSleepTime(insertPerMin)
+        print("[DEBUG] Sleep time between insertions: " + str(sleepTime))
+
     counter = 0
     db = setupDatabase(CONST_DB_HOST)
     ip_list = build_ip_list(startingIP, numClients)
     remote_dbs = init_db_connections(startingIP, numClients, ip_list)
-    print("Remote connections: " + str(remote_dbs))
+
+    if DEBUG_MODE:
+        print("[DEBUG] Remote connections: " + str(remote_dbs))
+
     queuedInserts = deque([])
 
     # Guarantees everyone is synced
-    sync_dbs(db, numClients, remote_dbs)
+    if DEBUG_MODE:
+        print("[DEBUG] Starting sync phase...")
+        sync_dbs(db, numClients, remote_dbs)
+        print("[DEBUG] Synced.")
 
     while counter < maxInsertions:
         # Gets data to insert
@@ -81,7 +93,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         insertIntoDB(db.cursor(), [(key, value)])
         afterInsertionTime = time.time()
         timeTook = afterInsertionTime - insertionTime
-        print("Inserted \"" + key + "\" with value " + str(value) + " and took " + str(round(timeTook, 2)) + " seconds")
+        if DEBUG_MODE:
+            print("[DEBUG] Inserted \"" + key + "\" with value " + str(value) + " and took " + str(round(timeTook, 2)) + " seconds")
 
         # Adds to queue
         queuedInserts.append((key, value))
@@ -94,15 +107,23 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
             afterInsertionTime = time.time()
             while queuedInserts:
                 queuedInserts.pop()
-            print("Took " + str(afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
+            if DEBUG_MODE:
+                print("[DEBUG] Took " + str(afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
 
         # Sleeps remaining time
-        print("Will sleep " + str(sleepTime) + " seconds.")
+        if DEBUG_MODE:
+            print("[DEBUG] Will sleep " + str(sleepTime - timeTook) + " seconds.")
         time.sleep(sleepTime - timeTook)
 
         counter += 1
 
+    if DEBUG_MODE:
+        print("[DEBUG] Closing DB connections.")
+
     db.close()
+
+    for rdb in remote_dbs:
+        rdb.close()
 
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
@@ -138,11 +159,19 @@ def getAverage(cursor):
 
 # Tries connection to a DB in IP
 def setupDatabase(ip):
-    db = MySQLdb.connect(host=str(ip),
-                         user=CONST_DB_USER,
-                         passwd=CONST_DB_PASSWORD,
-                         db=CONST_DB_NAME)
-    db.autocommit(True)
+    success = False
+
+    while not success:
+        try:
+            db = MySQLdb.connect(host=str(ip),
+                                 user=CONST_DB_USER,
+                                 passwd=CONST_DB_PASSWORD,
+                                 db=CONST_DB_NAME)
+            db.autocommit(True)
+            success = True
+        except MySQLdb.OperationalError:
+            continue
+
     return db
 
 # Starts connections to the other clients databases and stores the DBs in a list
@@ -156,6 +185,7 @@ def init_db_connections(startingIP, numClients, ip_list):
 
 # Builds a list with the other clients IPs (this only works based on an incremental IP system)
 def build_ip_list(startingIP, numClients):
+
     localIP = get_ip_address()
     ip_list = []
 
@@ -184,10 +214,9 @@ def sync_dbs(db, numClients, remote_dbs):
     cursor.execute("set session transaction isolation level read committed")
 
     cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-    fetchedValues = cursor.fetchall();
+    fetchedValues = cursor.fetchall()
 
     # Insert in local database
-    print("Decision: " + str(fetchedValues))
     if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
         cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
     else :
@@ -195,10 +224,10 @@ def sync_dbs(db, numClients, remote_dbs):
 
     # Updates value in remote databases
     for rdb in remote_dbs:
-        rdb_cursor = rdb.cursor();
+        rdb_cursor = rdb.cursor()
         rdb_cursor.execute("set session transaction isolation level read committed")
         rdb_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-        fetchedValues = rdb_cursor.fetchall();
+        fetchedValues = rdb_cursor.fetchall()
         if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
             rdb_cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
         else:
@@ -208,14 +237,14 @@ def sync_dbs(db, numClients, remote_dbs):
     while not synced:
         cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
         fetchedValues = cursor.fetchall()
-        print(fetchedValues)
         if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0:
             num = fetchedValues[0][0]
-            print(str(num))
+            if DEBUG_MODE:
+                print("[DEBUG] Current value in DB sync field: " + str(num))
         if num == numClients:
             synced = True
         else:
-            time.sleep(1)
+            time.sleep(2)
 
 
 # Gets own IP address
@@ -223,6 +252,8 @@ def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))
     ip = ipaddress.ip_address(s.getsockname()[0])
+    if DEBUG_MODE:
+        print("[DEBUG] Host IP: " + str(ip))
     s.close()
     return ip
 
