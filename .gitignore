@@ -6,3 +6,4 @@ logs/install_log.txt
 *.log
 
 Container/teste\.py
+kill_containers.sh
