@@ -2,14 +2,13 @@ import random
 import time
 import hashlib
 import sys
-
 import MySQLdb
 import ipaddress
 import socket
 from collections import deque
 
 # Constants used throught the program
-CONST_USAGE = "Usage: python3 toyapp.py insertions_per_minute max_insertions number_of_clients starting_ip batch_size"
+CONST_USAGE = "Usage: python3 toyapp.py | insertions_per_minute | max_insertions | number_of_clients | starting_ip | batch_size"
 CONST_DB_HOST = "localhost"
 CONST_DB_USER = "username"
 CONST_DB_PASSWORD = "password"
@@ -22,7 +21,7 @@ CONST_DB_SYNCED_COL_NAME = "synced"
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 
 def main(argv):
     print("Starting toyapp")
@@ -62,9 +61,9 @@ def getSleepTime(timesPerMin):
 # every x seconds will insert a tuple into the database
 def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     startTime = time.time()
+    sleepTime = getSleepTime(insertPerMin)
 
     if DEBUG_MODE:
-        sleepTime = getSleepTime(insertPerMin)
         print("[DEBUG] Sleep time between insertions: " + str(sleepTime))
 
     counter = 0
@@ -217,21 +216,36 @@ def sync_dbs(db, numClients, remote_dbs):
     fetchedValues = cursor.fetchall()
 
     # Insert in local database
-    if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
-        cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
-    else :
-        cursor.execute(insertString)
+    cursor.execute(insertString)
+
+    failed_rdbs = list(remote_dbs) #clones the whole 
+
 
     # Updates value in remote databases
-    for rdb in remote_dbs:
-        rdb_cursor = rdb.cursor()
-        rdb_cursor.execute("set session transaction isolation level read committed")
-        rdb_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-        fetchedValues = rdb_cursor.fetchall()
-        if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
-            rdb_cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
-        else:
-            rdb_cursor.execute(insertString)
+    while len(failed_rdbs) != 0:
+        for rdb in remote_dbs:
+
+            if rdb not in failed_rdbs: 
+                continue
+
+            try:
+                rdb_cursor = rdb.cursor()
+                rdb_cursor.execute("set session transaction isolation level read committed")
+                rdb_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+                fetchedValues = rdb_cursor.fetchall()
+                #if there is no value in the table yet, insert there
+                if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
+                    rdb_cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
+                    if rdb in failed_rdbs:
+                        failed_rdbs.remove(rdb)
+                else:
+                    failed_rdbs.append(rdb)
+
+            except MySQLdb.ProgrammingError:
+                if DEBUG_MODE:
+                    print("Failed to insert in database, adding it to the failed list")
+        time.sleep(1) #waits a second to try to insert into the other databases again
+
 
     # Waits till current synced value gets incremented by all other clients. Checks every second.
     while not synced:
@@ -241,7 +255,7 @@ def sync_dbs(db, numClients, remote_dbs):
             num = fetchedValues[0][0]
             if DEBUG_MODE:
                 print("[DEBUG] Current value in DB sync field: " + str(num))
-        if num == numClients:
+        if num >= numClients:
             synced = True
         else:
             time.sleep(2)
