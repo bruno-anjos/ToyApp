@@ -7,3 +7,4 @@ logs/install_log.txt
 
 Container/teste\.py
 kill_containers.sh
+redo.sh
