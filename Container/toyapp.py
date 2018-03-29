@@ -17,6 +17,7 @@ CONST_DB_TABLENAME = "dummy_table"
 CONST_DB_SYNCED_TABLENAME = "synced_table"
 CONST_DB_NUM_COL_NAME = "num"
 CONST_DB_SYNCED_COL_NAME = "synced"
+CONST_DB_CONNECT_TIMEOUT = 4
 
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
@@ -69,6 +70,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     counter = 0
     db = setupDatabase(CONST_DB_HOST)
     ip_list = build_ip_list(startingIP, numClients)
+    if DEBUG_MODE:
+        print("[DEBUG] IP List: " + str(ip_list))
     remote_dbs = init_db_connections(startingIP, numClients, ip_list)
 
     if DEBUG_MODE:
@@ -162,13 +165,19 @@ def setupDatabase(ip):
 
     while not success:
         try:
+            if DEBUG_MODE:
+                print("[DEBUG] Will try to connect to " + str(ip))
             db = MySQLdb.connect(host=str(ip),
                                  user=CONST_DB_USER,
                                  passwd=CONST_DB_PASSWORD,
-                                 db=CONST_DB_NAME)
+                                 db=CONST_DB_NAME,
+                                 connect_timeout=CONST_DB_CONNECT_TIMEOUT)
             db.autocommit(True)
             success = True
         except MySQLdb.OperationalError:
+            if DEBUG_MODE:
+                print("[DEBUG] Failed to connect to " + str(ip))
+            time.sleep(2)
             continue
 
     return db
@@ -212,9 +221,6 @@ def sync_dbs(db, numClients, remote_dbs):
     cursor = db.cursor()
     cursor.execute("set session transaction isolation level read committed")
 
-    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-    fetchedValues = cursor.fetchall()
-
     # Insert in local database
     cursor.execute(insertString)
 
@@ -238,7 +244,7 @@ def sync_dbs(db, numClients, remote_dbs):
                     rdb_cursor.execute("UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
                     if rdb in failed_rdbs:
                         failed_rdbs.remove(rdb)
-                else:
+                elif rdb not in failed_rdbs:
                     failed_rdbs.append(rdb)
 
             except MySQLdb.ProgrammingError:
