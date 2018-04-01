@@ -128,15 +128,24 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if len(queuedInserts) > 0:
         for rdb in remote_dbs:
             insertIntoDB(rdb.cursor(), queuedInserts)
-        
-
-
-    getAverage(db.cursor())
 
     if DEBUG_MODE:
         print("[DEBUG] Closing DB connections.")
 
     closeConnections(remote_dbs, db)
+
+    endTime = time.time()
+    runningTime = endTime - startTime
+
+    if DEBUG_MODE:
+        print("[DEBUG] Closing Toy App. App ran for " + str(runningTime) + " seconds.")
+
+    localCursor = db.cursor();
+
+    writeStatsToFile(runningTime, getAverage(localCursor))
+
+    localCursor.close()
+    db.close()
 
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
@@ -177,6 +186,21 @@ def getAverage(cursor):
     print("Row count is: " + str(counter))
     print("Average is: " + str(avg))
 
+    return avg
+
+
+def writeStatsToFile(runningTime, avg):
+    if DEBUG_MODE:
+        print("[DEBUG] Writing stats to file...")
+
+    statsFile = open("/log/"+socket.gethostname(), "w")
+    statsFile.write("Ran for " + str(runningTime) + " seconds\n")
+    statsFile.write("Average in DB is " + str(avg))
+
+    if DEBUG_MODE:
+        print("[DEBUG] Finished writing stats to file " + statsFile.name)
+
+    statsFile.close()
 
 # Tries connection to a DB in IP
 def setupDatabase(ip):
@@ -238,6 +262,9 @@ def closeConnections(remote_dbs, local_db):
     exception_count = 0
 
     while len(failed_rdbs) != 0:
+        if exception_count >= 10:
+            break
+
         for rdb in remote_dbs:
             if rdb not in failed_rdbs:
                 continue
@@ -252,12 +279,13 @@ def closeConnections(remote_dbs, local_db):
 
             except MySQLdb.ProgrammingError:
                 if DEBUG_MODE:
-                    print("Failed to update database")
+                    print("[DEBUG] Failed to update database")
+                    print(str(rdb))
             except MySQLdb.OperationalError:
                 exception_count += 1
                 if DEBUG_MODE:
-                    print("Failed to update database, exception count is: " + str(exception_count))
-
+                    print("[DEBUG] Failed to update database, exception count is: " + str(exception_count))
+                    print(str(rdb))
         time.sleep(1)
 
     while True:
@@ -265,6 +293,8 @@ def closeConnections(remote_dbs, local_db):
         fetchedValues = local_cursor.fetchall()
         if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0:
             num = fetchedValues[0][0]
+            if DEBUG_MODE:
+                print("[DEBUG] My value in db desync is: " + str(num))
             if num == 0:
                 if DEBUG_MODE:
                     print("[DEBUG] My DB sync has a value of 0, closing")
@@ -274,6 +304,7 @@ def closeConnections(remote_dbs, local_db):
         else:
             print("Error has ocurred")
             break
+        time.sleep(1)
 
     
 
@@ -284,12 +315,7 @@ def closeConnections(remote_dbs, local_db):
         rdb.close()
 
     # there might be cursors laying around, calling garbage collector just to be safe
-    gc.collect() 
-
-    local_cursor.close()
-    local_db.close()
-
-
+    gc.collect()
 
 
 # Syncs the clients to guarantee that all the databases are initiated
@@ -347,7 +373,7 @@ def sync_dbs(db, numClients, remote_dbs):
             num = fetchedValues[0][0]
             if DEBUG_MODE:
                 print("[DEBUG] Current value in DB sync field: " + str(num))
-        if num >= numClients:
+        if num == numClients:
             synced = True
         else:
             time.sleep(2)
