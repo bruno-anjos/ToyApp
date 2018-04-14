@@ -25,7 +25,6 @@ CONST_MAX_NUM = 100
 
 DEBUG_MODE = True
 
-
 def main(argv):
     print("Starting toyapp")
     # Feeds the random generator with the current UNIX timestamp as seed
@@ -70,11 +69,22 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         print("[DEBUG] Sleep time between insertions: " + str(sleepTime))
 
     counter = 0
+
     db = setupDatabase(CONST_DB_HOST)
+
+    if get_ip_address() == startingIP:
+        print("[DEBUG] This is master node")
+        masterDB = db
+    else:
+        print("[DEBUG] Master node is " + str(startingIP))
+        masterDB = setupDatabase(startingIP)
+
     ip_list = build_ip_list(startingIP, numClients)
+
     if DEBUG_MODE:
         print("[DEBUG] IP List: " + str(ip_list))
-    remote_dbs = init_db_connections(startingIP, numClients, ip_list)
+
+    remote_dbs = init_db_connections(numClients, ip_list)
 
     if DEBUG_MODE:
         print("[DEBUG] Remote connections: " + str(remote_dbs))
@@ -84,7 +94,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     # Guarantees everyone is synced
     if DEBUG_MODE:
         print("[DEBUG] Starting sync phase...")
-        sync_dbs(db, numClients, remote_dbs)
+        sync_dbs(masterDB, numClients)
         print("[DEBUG] Synced.")
 
     while counter < maxInsertions:
@@ -132,7 +142,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Closing DB connections.")
 
-    closeConnections(remote_dbs, db)
+    closeConnections(remote_dbs, masterDB)
 
     endTime = time.time()
     runningTime = endTime - startTime
@@ -140,7 +150,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Closing Toy App. App ran for " + str(runningTime) + " seconds.")
 
-    localCursor = db.cursor();
+    localCursor = db.cursor()
 
     writeStatsToFile(runningTime, getAverage(localCursor))
 
@@ -227,11 +237,12 @@ def setupDatabase(ip):
 
 
 # Starts connections to the other clients databases and stores the DBs in a list
-def init_db_connections(startingIP, numClients, ip_list):
+def init_db_connections(numClients, ip_list):
     remote_dbs = []
 
     for i in range(1, numClients):
-        remote_dbs.append(setupDatabase(ip_list[i - 1]))
+        db = setupDatabase(ip_list[i - 1])
+        remote_dbs.append(db)
 
     return remote_dbs
 
@@ -251,129 +262,60 @@ def build_ip_list(startingIP, numClients):
     return ip_list
 
 
-def closeConnections(remote_dbs, local_db):
-    updateString = CONST_DB_NUM_COL_NAME + "=" + CONST_DB_NUM_COL_NAME + "-1"
+def closeConnections(remote_dbs, masterDB):
+    synced = False
 
-    local_cursor = local_db.cursor()
-    local_cursor.execute(
-        "UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
+    deleteString = "DELETE FROM " + CONST_DB_SYNCED_TABLENAME + " WHERE " + CONST_DB_SYNCED_COL_NAME + " = " + "\'" + str(get_ip_address()) + "\'"
 
-    failed_rdbs = list(remote_dbs)
-    exception_count = 0
+    cursor = masterDB.cursor()
+    cursor.execute(deleteString)
 
-    while len(failed_rdbs) != 0:
-        if exception_count >= 10:
-            break
+    while not synced:
+        cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+        fetchedValues = cursor.fetchall()
 
-        for rdb in remote_dbs:
-            if rdb not in failed_rdbs:
-                continue
-
-            try:
-                rdb_cursor = rdb.cursor()
-                rdb_cursor.execute(
-                    "UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
-
-                if rdb in failed_rdbs:
-                    failed_rdbs.remove(rdb)
-
-            except MySQLdb.ProgrammingError:
-                if DEBUG_MODE:
-                    print("[DEBUG] Failed to update database")
-                    print(str(rdb))
-            except MySQLdb.OperationalError:
-                exception_count += 1
-                if DEBUG_MODE:
-                    print("[DEBUG] Failed to update database, exception count is: " + str(exception_count))
-                    print(str(rdb))
-        time.sleep(1)
-
-    while True:
-        local_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-        fetchedValues = local_cursor.fetchall()
-        if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0:
-            num = fetchedValues[0][0]
-            if DEBUG_MODE:
-                print("[DEBUG] My value in db desync is: " + str(num))
-            if num == 0:
-                if DEBUG_MODE:
-                    print("[DEBUG] My DB sync has a value of 0, closing")
-                break
-            elif DEBUG_MODE:
-                print("[DEBUG] Current value in DB sync field: " + str(num))
+        if DEBUG_MODE:
+            print("[DEBUG] Current value in DB sync field: " + str(len(fetchedValues)))
+        if len(fetchedValues) == 0:
+            synced = True
         else:
-            print("Error has ocurred")
-            break
-        time.sleep(1)
-
-    
+            time.sleep(2)
 
     #close all remote connections first
     for rdb in remote_dbs:
-        rdb_cursor = rdb.cursor()
-        rdb_cursor.close()
-        rdb.close()
+        try:
+            rdb_cursor = rdb.cursor()
+            rdb_cursor.close()
+            rdb.close()
+        except MySQLdb.OperationalError:
+            print("[DEBUG] DB already closed")
 
     # there might be cursors laying around, calling garbage collector just to be safe
     gc.collect()
 
 
 # Syncs the clients to guarantee that all the databases are initiated
-def sync_dbs(db, numClients, remote_dbs):
+def sync_dbs(masterDB, numClients):
     synced = False
-    num = 0
 
     # Query used to update the synced value in remote databases
     insertString = "INSERT INTO " + CONST_DB_SYNCED_TABLENAME + " VALUES "
-    insertString += ("(\"synced\", " + str(1) + ")")
-    updateString = CONST_DB_NUM_COL_NAME + "=" + CONST_DB_NUM_COL_NAME + "+1"
+    insertString += ("(\"" + str(get_ip_address()) + "\", " + str(1) + ")")
 
     # Guarantees transaction isolation level allows the correct read
-    cursor = db.cursor()
+    cursor = masterDB.cursor()
     cursor.execute("set session transaction isolation level read committed")
 
     # Insert in local database
     cursor.execute(insertString)
 
-    failed_rdbs = list(remote_dbs)  # clones the whole
-
-    # Updates value in remote databases
-    while len(failed_rdbs) != 0:
-        for rdb in remote_dbs:
-
-            if rdb not in failed_rdbs:
-                continue
-
-            try:
-                rdb_cursor = rdb.cursor()
-                rdb_cursor.execute("set session transaction isolation level read committed")
-                rdb_cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
-                fetchedValues = rdb_cursor.fetchall()
-
-                if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0 and fetchedValues[0][0] > 0:
-
-                    rdb_cursor.execute(
-                        "UPDATE " + CONST_DB_SYNCED_TABLENAME + " SET " + updateString + " WHERE " + CONST_DB_SYNCED_COL_NAME + "=\"" + CONST_DB_SYNCED_COL_NAME + "\"")
-                    if rdb in failed_rdbs:
-                        failed_rdbs.remove(rdb)
-
-                elif rdb not in failed_rdbs:
-                    failed_rdbs.append(rdb)
-
-            except MySQLdb.ProgrammingError:
-                if DEBUG_MODE:
-                    print("Failed to insert in database, adding it to the failed list")
-        time.sleep(1)  # waits a second to try to insert into the other databases again
-
-    # Waits till current synced value gets incremented by all other clients. Checks every second.
     while not synced:
         cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
         fetchedValues = cursor.fetchall()
-        if len(fetchedValues) > 0 and len(fetchedValues[0]) > 0:
-            num = fetchedValues[0][0]
-            if DEBUG_MODE:
-                print("[DEBUG] Current value in DB sync field: " + str(num))
-        if num == numClients:
+
+        if DEBUG_MODE:
+            print("[DEBUG] Current value in DB sync field: " + str(len(fetchedValues)))
+        if len(fetchedValues) == numClients:
             synced = True
         else:
             time.sleep(2)
