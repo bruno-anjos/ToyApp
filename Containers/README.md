@@ -18,18 +18,18 @@ Na inicialização da aplicação têm de ser passados como argumentos o número
 user@user-pc ~ $ python3 toyapp.py n_inserts_minute n_max_inserts n_clients starting_ip batch_size
 ```
 Como os ambientes não serão todos lançados ao mesmo tempo, existe uma necessidade de serem sincronizados antes de começarem a ser feitas inserções nas bases de dados de outras aplicações na rede, de forma a garantir que os serviços já estão operacionais e prontos a receber pedidos. 
-É então usada uma chave (*num_online*) na base de dados de cada uma das aplicações que será incrementada pelos restantes clientes, e que apenas quando for igual ao número de clientes instanciados, permitirá à aplicação prosseguir, garantindo assim alguma sincronização entre todos os clientes na rede, ou seja, um cliente não só tem de incrementar o valor dessa chave em todos os outros clientes, como também tem que aguardar que a sua chave fique com o valor esperado:
+É então usada uma tabela na base de dados do nó coordenador, e cada uma dos nós irá inserir um tuplo nessa tabela, e que apenas quando o número de tuplos da tabela for igual ao número de nós instanciados, permitirá à aplicação prosseguir, garantindo assim alguma sincronização entre todos os clientes na rede:
 
 ```python
 #Increment others
-for c in connections:
-	c.insert(UPDATE table_name SET num_online = num_online + 1;)
+
+c.insert(INSERT INTO sync_table;)
 
 #Wait for others to increment
 sync = False
 while not sync:
-	n = db.query(SELECT num_online FROM table_name)
-	if n == n_clients
+	n = db.query(SELECT * FROM sync_table)
+	if len(n) == n_clients
 		sync = True
 	else
 		sleep(1)
@@ -46,6 +46,7 @@ Durante esta fase o objetivo será de "stressar" o sistema, saturando-o com cons
 wait_time = Seconds_in_a_min / n_inserts_minute
 
 while num_inserts < num_inserted:
+
 	wait_time = wait_time - time_passed_inserting_last_batch
 
 	if wait_time has passed:
@@ -58,12 +59,11 @@ while num_inserts < num_inserted:
 
 		collect_analytics()
     
-
 ```
+
 **TODO**
   * definir os dados a recolher
-  * as inserções nos outros clientes poderão ser em "batches" (conjuntos de tuplos guardados numa tabela auxiliar) ou 
-		a inserção nos outros clientes é feita 1 a 1 (este ponto está por definir)
+
 
 ### Finalização
 
