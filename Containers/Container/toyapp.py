@@ -9,7 +9,8 @@ import gc
 from collections import deque
 
 # Constants used throught the program
-CONST_USAGE = "Usage: python3 toyapp.py | insertions_per_minute | max_insertions | number_of_clients | starting_ip | batch_size"
+CONST_USAGE = """Usage: python3 toyapp.py | insertions_per_minute | max_insertions |
+                     number_of_clients | starting_ip | batch_size"""
 CONST_DB_HOST = "localhost"
 CONST_DB_USER = "username"
 CONST_DB_PASSWORD = "password"
@@ -24,20 +25,36 @@ CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
 DEBUG_MODE = True
+BASELINE_MODE = False
 
 def main(argv):
     print("Starting toyapp")
     # Feeds the random generator with the current UNIX timestamp as seed
     random.seed(time.time())
 
+    global DEBUG_MODE
+    global BASELINE_MODE
+
     if len(argv) < 6:
         print(argv)
         print(CONST_USAGE)
         sys.exit(1)
 
-    elif len(argv) == 7 and str(argv[6]).lower() == "debug":
-        global DEBUG_MODE
+    elif len(argv) == 6:
+
         DEBUG_MODE = True
+        BASELINE_MODE = False
+
+    elif len(argv) > 6:
+        for arg in argv[6::]:
+            if str(arg) == "debug":
+                DEBUG_MODE = True
+                print("debug mode ON")
+                
+            if str(arg) == "baseline":
+                BASELINE_MODE = True
+                print("Baseline mode ON")
+    
 
     # Get starting parameters
     insertPerMin = int(argv[1])
@@ -71,9 +88,11 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     counter = 0
 
     db = setupDatabase(CONST_DB_HOST)
+    master_node = False
 
     if get_ip_address() == startingIP:
         print("[DEBUG] This is master node")
+        master_node = True
         masterDB = db
     else:
         print("[DEBUG] Master node is " + str(startingIP))
@@ -111,20 +130,21 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
             print("[DEBUG] Inserted \"" + key + "\" with value " + str(value) + " and took " + str(
                 round(timeTook, 2)) + " seconds")
 
-        # Adds to queue
-        queuedInserts.append((key, value))
+        if not BASELINE_MODE:
+            # Adds to queue
+            queuedInserts.append((key, value))
 
-        # Checks if need to flush queue to remote DBs
-        if len(queuedInserts) >= batchSize:
-            insertionTime = time.time()
-            for rdb in remote_dbs:
-                insertIntoDB(rdb.cursor(), queuedInserts)
-            afterInsertionTime = time.time()
-            while queuedInserts:
-                queuedInserts.pop()
-            if DEBUG_MODE:
-                print("[DEBUG] Took " + str(
-                    afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
+            # Checks if need to flush queue to remote DBs
+            if len(queuedInserts) >= batchSize:
+                insertionTime = time.time()
+                for rdb in remote_dbs:
+                    insertIntoDB(rdb.cursor(), queuedInserts)
+                afterInsertionTime = time.time()
+                while queuedInserts:
+                    queuedInserts.pop()
+                if DEBUG_MODE:
+                    print("[DEBUG] Took " + str(
+                        afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
 
         # Sleeps remaining time
         if DEBUG_MODE:
@@ -142,7 +162,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Closing DB connections.")
 
-    closeConnections(remote_dbs, masterDB)
+    closeConnections(remote_dbs, masterDB , master_node)
 
     endTime = time.time()
     runningTime = endTime - startTime
@@ -215,7 +235,7 @@ def writeStatsToFile(runningTime, avg):
 # Tries connection to a DB in IP
 def setupDatabase(ip):
     success = False
-
+    db = None
     while not success:
         try:
             if DEBUG_MODE:
@@ -262,7 +282,7 @@ def build_ip_list(startingIP, numClients):
     return ip_list
 
 
-def closeConnections(remote_dbs, masterDB):
+def closeConnections(remote_dbs, masterDB , master_node):
     synced = False
 
     deleteString = "DELETE FROM " + CONST_DB_SYNCED_TABLENAME + " WHERE " + CONST_DB_SYNCED_COL_NAME + " = " + "\'" + str(get_ip_address()) + "\'"
@@ -278,8 +298,10 @@ def closeConnections(remote_dbs, masterDB):
             print("[DEBUG] Current value in DB sync field: " + str(len(fetchedValues)))
         if len(fetchedValues) == 0:
             synced = True
+            if master_node:
+                time.sleep(10)
         else:
-            time.sleep(2)
+            time.sleep(0.2)
 
     #close all remote connections first
     for rdb in remote_dbs:
