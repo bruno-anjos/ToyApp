@@ -172,7 +172,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     localCursor = db.cursor()
 
-    writeStatsToFile(runningTime, getAverage(localCursor))
+    writeStatsToFile(runningTime, getAverage(localCursor) , getDatabaseSize(localCursor))
 
     localCursor.close()
     db.close()
@@ -218,14 +218,29 @@ def getAverage(cursor):
 
     return avg
 
+def getDatabaseSize(cursor):
+    query = '''SELECT table_schema "DB Name",
+        ROUND(SUM(data_length + index_length) / 1024 / 1024, 1) "DB Size in MB" 
+        FROM information_schema.tables 
+        GROUP BY table_schema; '''
+    cursor.execute(query)
+    size = cursor.fetchone()
 
-def writeStatsToFile(runningTime, avg):
+    if DEBUG_MODE:
+        print("[DEBUG] Database size in MB is: " + str(size[1]))
+    return str(size[1])
+
+
+
+
+def writeStatsToFile(runningTime, avg , sizeDB):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
     statsFile = open("/log/"+socket.gethostname(), "w")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
-    statsFile.write("Average in DB is " + str(avg))
+    statsFile.write("Average in DB is " + str(avg) + "\n")
+    statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
 
     if DEBUG_MODE:
         print("[DEBUG] Finished writing stats to file " + statsFile.name)
@@ -363,6 +378,7 @@ def testDatabase():
     insertIntoDB(cursor, [(key, value)])
     getAverage(cursor)
     sys.exit(0)
+
 
 
 # conventional stuff, dont ask me.
