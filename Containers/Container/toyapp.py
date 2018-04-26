@@ -20,6 +20,7 @@ CONST_DB_SYNCED_TABLENAME = "synced_table"
 CONST_DB_NUM_COL_NAME = "num"
 CONST_DB_SYNCED_COL_NAME = "synced"
 CONST_DB_CONNECT_TIMEOUT = 4
+CONST_ARG_FILE_NAME = "args.txt"
 
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
@@ -35,18 +36,24 @@ def main(argv):
     global DEBUG_MODE
     global BASELINE_MODE
 
-    if len(argv) < 6:
-        print(argv)
+    argv = argv[1::]
+
+
+    if len(argv) < 5:
+        argv = readArgsFromFile()
+   
+    if len(argv) < 5:
         print(CONST_USAGE)
         sys.exit(1)
 
-    elif len(argv) == 6:
+    elif len(argv) == 5:
 
-        DEBUG_MODE = True
+        DEBUG_MODE = False
         BASELINE_MODE = False
+        
 
-    elif len(argv) > 6:
-        for arg in argv[6::]:
+    elif len(argv) > 5:
+        for arg in argv[5::]:
             if str(arg) == "debug":
                 DEBUG_MODE = True
                 print("debug mode ON")
@@ -57,17 +64,30 @@ def main(argv):
     
 
     # Get starting parameters
-    insertPerMin = int(argv[1])
-    maxInsertions = int(argv[2])
-    numClients = int(argv[3])
-    startingIP = ipaddress.ip_address(argv[4])
-    batchSize = int(argv[5])
+    insertPerMin = int(argv[0])
+    maxInsertions = int(argv[1])
+    numClients = int(argv[2])
+    startingIP = ipaddress.ip_address(argv[3])
+    batchSize = int(argv[4])
 
     if DEBUG_MODE:
         print("[DEBUG] Starting main loop")
     mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize)
 
     sys.exit(0)
+
+
+
+def readArgsFromFile():
+    if DEBUG_MODE:
+        print("[DEBUG] Reading args...")
+
+    file = open(CONST_ARG_FILE_NAME, "r")
+    args = file.read().split(" ")
+
+    file.close()
+
+    return args
 
 
 # Converts @param timesPerMin to how much time to wait in order to 
@@ -237,7 +257,7 @@ def writeStatsToFile(runningTime, avg , sizeDB):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
-    statsFile = open("/log/"+socket.gethostname(), "w")
+    statsFile = open("/log/" + socket.gethostname(), "w")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
     statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
