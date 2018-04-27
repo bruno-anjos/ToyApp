@@ -380,12 +380,15 @@ def sync_dbs(masterDB, numClients):
 
 # Gets own IP address
 def get_ip_address():
-    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    s.connect(("8.8.8.8", 80))
-    ip = ipaddress.ip_address(s.getsockname()[0])
-    if DEBUG_MODE:
-        print("[DEBUG] Host IP: " + str(ip))
-    s.close()
+    try:
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect(("8.8.8.8", 80))
+        ip = ipaddress.ip_address(s.getsockname()[0])
+        if DEBUG_MODE:
+            print("[DEBUG] Host IP: " + str(ip))
+        s.close()
+    except OSError:
+        return socket.gethostbyname(socket.gethostname())
     return ip
 
 
