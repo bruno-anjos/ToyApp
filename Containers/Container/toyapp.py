@@ -382,7 +382,7 @@ def sync_dbs(masterDB, numClients):
 def get_ip_address(startingIP):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((startingIP, 8080))
+        s.connect((str(startingIP), 8080))
         ip = ipaddress.ip_address(s.getsockname()[0])
         if DEBUG_MODE:
             print("[DEBUG] Host IP: " + str(ip))
