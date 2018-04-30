@@ -110,7 +110,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     db = setupDatabase(CONST_DB_HOST)
     master_node = False
 
-    if get_ip_address() == startingIP:
+    if get_ip_address(startingIP) == startingIP:
         print("[DEBUG] This is master node")
         master_node = True
         masterDB = db
@@ -379,7 +379,7 @@ def sync_dbs(masterDB, numClients):
 
 
 # Gets own IP address
-def get_ip_address():
+def get_ip_address(startingIP):
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         s.connect((startingIP, 8080))
