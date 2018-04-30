@@ -388,8 +388,8 @@ def get_ip_address():
             print("[DEBUG] Host IP: " + str(ip))
         s.close()
     except OSError:
-    	if DEBUG_MODE:
-    		print("[DEBUG] got OSError")
+        if DEBUG_MODE:
+            print("[DEBUG] got OSError")
         ip = socket.gethostbyname(socket.gethostname())
         if(DEBUG_MODE):
             print("[DEBUG] Host IP: " + str(ip))
