@@ -48,7 +48,7 @@ def main(argv):
 
     elif len(argv) == 5:
 
-        DEBUG_MODE = False
+        DEBUG_MODE = True
         BASELINE_MODE = False
         
 
@@ -382,12 +382,14 @@ def sync_dbs(masterDB, numClients):
 def get_ip_address():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect(("8.8.8.8", 80))
+        s.connect((startingIP, 8080))
         ip = ipaddress.ip_address(s.getsockname()[0])
         if DEBUG_MODE:
             print("[DEBUG] Host IP: " + str(ip))
         s.close()
     except OSError:
+    	if DEBUG_MODE:
+    		print("[DEBUG] got OSError")
         ip = socket.gethostbyname(socket.gethostname())
         if(DEBUG_MODE):
             print("[DEBUG] Host IP: " + str(ip))
