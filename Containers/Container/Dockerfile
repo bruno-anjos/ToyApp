@@ -1,6 +1,6 @@
 
 # create an image from scratch
-FROM mysql
+FROM mysql:5.7.22
 
 # Set the working directory to /app
 WORKDIR /app
