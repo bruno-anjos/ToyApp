@@ -391,13 +391,19 @@ def get_ip_address():
         if DEBUG_MODE:
             print("[DEBUG] Host IP: " + str(ip))
         s.close()
+
     except OSError:
         if DEBUG_MODE:
             print("[DEBUG] got OSError")
-        ip = os.popen('ip addr show').read().split("inet ")[1].split("/")[0]
-        if(DEBUG_MODE):
-            print("[DEBUG] Host IP: " + str(ip))
-        return ip
+
+        ip = '127.0.0.1'
+        output = os.popen('ip addr show').read().split("inet ")
+        for s in output:
+            index = s.find("/")
+            if index < 16 and index > 0:
+                ip = s[0:index]
+                if(ip != '127.0.0.1'):
+                    break
     return ip
 
 
