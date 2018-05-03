@@ -392,7 +392,7 @@ def get_ip_address():
         s.close()
 
     except OSError:
-        
+
         if DEBUG_MODE:
             print("[DEBUG] got OSError")
 
@@ -406,7 +406,7 @@ def get_ip_address():
                     break
     if DEBUG_MODE:
         print("[DEBUG] Host IP: " + str(ip))
-    return ip
+    return ipaddress.ip_address(ip)
 
 
 # Tests local database
