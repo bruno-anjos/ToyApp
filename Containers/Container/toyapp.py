@@ -48,7 +48,6 @@ def main(argv):
         sys.exit(1)
 
     elif len(argv) == 5:
-
         DEBUG_MODE = True
         BASELINE_MODE = False
         
@@ -73,6 +72,7 @@ def main(argv):
 
     if DEBUG_MODE:
         print("[DEBUG] Starting main loop")
+
     mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize)
 
     sys.exit(0)
@@ -310,7 +310,9 @@ def build_ip_list(startingIP, numClients):
 
     # Inserts all IPs except own IP
     for i in range(0, numClients):
-        if (startingIP + i) == localIP:
+        print("[DEBUG] startingIP + i: " + str(startingIP + i))
+        print("[DEBUG] localIP: " + str(localIP))
+        if str(startingIP + i) == str(localIP):
             continue
         else:
             ip_list.append(startingIP + i)
