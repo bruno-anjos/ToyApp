@@ -388,11 +388,11 @@ def get_ip_address():
 
         s.connect(("8.8.8.8", 80))
         ip = s.getsockname()[0]
-        if DEBUG_MODE:
-            print("[DEBUG] Host IP: " + str(ip))
+
         s.close()
 
     except OSError:
+        
         if DEBUG_MODE:
             print("[DEBUG] got OSError")
 
@@ -404,6 +404,8 @@ def get_ip_address():
                 ip = s[0:index]
                 if(ip != '127.0.0.1'):
                     break
+    if DEBUG_MODE:
+        print("[DEBUG] Host IP: " + str(ip))
     return ip
 
 
