@@ -251,14 +251,11 @@ def getDatabaseSize(cursor):
         print("[DEBUG] Database size in MB is: " + str(size[1]))
     return str(size[1])
 
-
-
-
 def writeStatsToFile(runningTime, avg , sizeDB):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
-    statsFile = open("/log/" + socket.gethostname(), "w")
+    statsFile = open("/log/" + socket.gethostname(), "w+")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
     statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
@@ -407,18 +404,6 @@ def get_ip_address():
     if DEBUG_MODE:
         print("[DEBUG] Host IP: " + str(ip))
     return ipaddress.ip_address(ip)
-
-
-# Tests local database
-def testDatabase():
-    db = setupDatabase(CONST_DB_HOST)
-    cursor = db.cursor()
-    key = getHash()
-    value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
-    insertIntoDB(cursor, [(key, value)])
-    getAverage(cursor)
-    sys.exit(0)
-
 
 
 # conventional stuff, dont ask me.
