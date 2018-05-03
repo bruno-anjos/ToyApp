@@ -6,6 +6,7 @@ import MySQLdb
 import ipaddress
 import socket
 import gc
+import os
 from collections import deque
 
 # Constants used throught the program
@@ -110,7 +111,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     db = setupDatabase(CONST_DB_HOST)
     master_node = False
 
-    if get_ip_address(startingIP) == startingIP:
+    if get_ip_address() == startingIP:
         print("[DEBUG] This is master node")
         master_node = True
         masterDB = db
@@ -379,18 +380,19 @@ def sync_dbs(masterDB, numClients):
 
 
 # Gets own IP address
-def get_ip_address(startingIP):
+def get_ip_address():
     try:
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((str(startingIP), 8080))
-        ip = ipaddress.ip_address(s.getsockname()[0])
+
+        s.connect(("8.8.8.8", 80))
+        ip = s.getsockname()[0]
         if DEBUG_MODE:
             print("[DEBUG] Host IP: " + str(ip))
         s.close()
     except OSError:
         if DEBUG_MODE:
             print("[DEBUG] got OSError")
-        ip = socket.gethostbyname(socket.gethostname())
+        ip = os.popen('ip addr show').read().split("inet ")[1].split("/")[0]
         if(DEBUG_MODE):
             print("[DEBUG] Host IP: " + str(ip))
         return ip

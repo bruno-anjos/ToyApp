@@ -1,7 +1,7 @@
 #!/bin/bash
 
 echo "Starting mysql service"
-service mysql start
+/etc/init.d/mysql start
 echo "initializing database"
 mysql < DB_script.sql
 
