@@ -255,7 +255,7 @@ def writeStatsToFile(runningTime, avg , sizeDB):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
-    if not os.path.exists("/log")
+    if not os.path.exists("/log"):
         os.makedirs("/log")
 
     statsFile = open("/log/" + socket.gethostname(), "w")
