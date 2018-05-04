@@ -255,7 +255,10 @@ def writeStatsToFile(runningTime, avg , sizeDB):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
-    statsFile = open("/log/" + socket.gethostname(), "w+")
+    if not os.path.exists("/log")
+        os.makedirs("/log")
+
+    statsFile = open("/log/" + socket.gethostname(), "w")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
     statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
