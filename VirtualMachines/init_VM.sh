@@ -1,8 +1,4 @@
-#!/bin/bash
-
-apt-get install python3 -y 
-apt-get install python3-pip-y 
-apt-get install mysql-server -y 
-apt-get install mysql-client -y 
-apt-get install libmysqlclient-dev -y 
-pip3 install mysqlclient --upgrade pip
+/etc/init.d/mysql start
+mysql < ../Containers/Container/DB_script.sql
+python3 ../Containers/Container/toyapp.py
+mysql < erase_DB.sql
