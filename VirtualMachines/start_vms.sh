@@ -14,9 +14,10 @@ while [ $counter -lt $nVM ]; do
 
 	last_component=$((${ip_components[3]} + counter))
 	curr_IP="${ip_components[0]}.${ip_components[1]}.${ip_components[2]}.${last_component}"
-	command="bash /root/Toyapp/VirtualMachines/init_VM.sh"
 
-	scp -i $rsa_key args.txt root@$curr_IP:/root/Toyapp//Containers/Container/args.txt
+	command="bash Toyapp/VirtualMachines/init_VM.sh"
+
+	scp -i $rsa_key args.txt root@$curr_IP:Toyapp/Containers/Container/args.txt
 	ssh -i $rsa_key root@$curr_IP $command
 
 	((counter++))
