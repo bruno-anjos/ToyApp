@@ -259,7 +259,7 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP):
     if not os.path.exists("/log"):
         os.makedirs("/log")
 
-    statsFile = open("/log/toyapp_log" , "w")
+    statsFile = open("/log/toyapp_log_" + str(IP) , "w")
     statsFile.write("My IP is " + str(IP) + "\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Row Count is: " + str(rowCount) + "\n")

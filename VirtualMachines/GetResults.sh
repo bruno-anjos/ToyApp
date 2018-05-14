@@ -12,7 +12,7 @@ while [ $counter -lt $nVM ]; do
 	curr_IP="${ip_components[0]}.${ip_components[1]}.${ip_components[2]}.${last_component}"
 
 	echo "copying results"
-	scp -i $rsa_key root@$curr_IP:Toyapp/Containers/Container/args.txt ~/Desktop/VMLogs/"VM$counter"
+	scp -i $rsa_key root@$curr_IP:"/log/toyapp_log_$curr_IP" ~/Desktop/VMLogs/"VM$counter"
 	
 	echo "counter: $counter"
 	((counter++))
