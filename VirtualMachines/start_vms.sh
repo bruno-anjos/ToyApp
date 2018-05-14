@@ -18,7 +18,7 @@ while [ $counter -lt $nVM ]; do
 	command="cd Toyapp/VirtualMachines && bash init_VM.sh"
 
 	echo "copying args to: $curr_IP"
-	scp -i $rsa_key args.txt root@$curr_IP:Toyapp/Containers/Container/args.txt
+	scp -i $rsa_key args.txt root@$curr_IP:~/ToyApp/Containers/Container/args.txt
 	echo "Starting app on: $curr_IP"
 	screen -d -m -L ssh -i $rsa_key root@$curr_IP $command
 
@@ -27,3 +27,4 @@ while [ $counter -lt $nVM ]; do
 done
 
 rm args.txt
+
