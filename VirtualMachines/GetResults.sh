@@ -1,5 +1,5 @@
 startingIP=$1 	# the IP of vm0
-nVM=$2 	# how many insertions per batch 
+nVM=$2 
 rsa_key=$3
 
 ip_components=($(echo "$startingIP" | tr '.' '\n'))
@@ -18,5 +18,3 @@ while [ $counter -lt $nVM ]; do
 	((counter++))
 
 done
-
-rm args.txt
