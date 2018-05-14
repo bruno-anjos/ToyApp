@@ -20,8 +20,8 @@ while [ $counter -lt $nVM ]; do
 	echo "copying args to: $curr_IP"
 	scp -i $rsa_key args.txt root@$curr_IP:Toyapp/Containers/Container/args.txt
 	echo "Starting app on: $curr_IP"
-	ssh -i $rsa_key root@$curr_IP $command
-#screen -d -m 
+	screen -d -m -L ssh -i $rsa_key root@$curr_IP $command
+
 	((counter++))
 
 done

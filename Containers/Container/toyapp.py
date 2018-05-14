@@ -194,7 +194,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     localCursor = db.cursor()
     average, rowCount = getAverage(localCursor)
 
-    writeStatsToFile(runningTime, average , counter , getDatabaseSize(localCursor) , get_ip_address())
+    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address())
 
     localCursor.close()
     db.close()
