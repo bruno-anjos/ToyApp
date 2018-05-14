@@ -192,8 +192,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         print("[DEBUG] Closing Toy App. App ran for " + str(runningTime) + " seconds.")
 
     localCursor = db.cursor()
+    average, rowCount = getAverage(localCursor)
 
-    writeStatsToFile(runningTime, getAverage(localCursor) , getDatabaseSize(localCursor))
+    writeStatsToFile(runningTime, average , counter , getDatabaseSize(localCursor) , get_ip_address())
 
     localCursor.close()
     db.close()
@@ -237,7 +238,7 @@ def getAverage(cursor):
     print("Row count is: " + str(counter))
     print("Average is: " + str(avg))
 
-    return avg
+    return avg , counter
 
 def getDatabaseSize(cursor):
     query = '''SELECT table_schema "DB Name",
@@ -251,15 +252,17 @@ def getDatabaseSize(cursor):
         print("[DEBUG] Database size in MB is: " + str(size[1]))
     return str(size[1])
 
-def writeStatsToFile(runningTime, avg , sizeDB):
+def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
     if not os.path.exists("/log"):
         os.makedirs("/log")
 
-    statsFile = open("/log/" + socket.gethostname(), "w")
+    statsFile = open("/log/toyapp_log" , "w")
+    statsFile.write("My IP is " + str(IP) + "\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
+    statsFile.write("Row Count is: " + str(rowCount) + "\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
     statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
 
@@ -333,13 +336,13 @@ def closeConnections(remote_dbs, masterDB , master_node):
         fetchedValues = cursor.fetchall()
 
         if DEBUG_MODE:
-            print("[DEBUG] Current value in DB sync field: " + str(len(fetchedValues)))
+            print("[DEBUG] Current number of entries in sync table: " + str(len(fetchedValues)))
         if len(fetchedValues) == 0:
             synced = True
             if master_node:
                 time.sleep(10)
         else:
-            time.sleep(0.2)
+            time.sleep(1)
 
     #close all remote connections first
     for rdb in remote_dbs:
