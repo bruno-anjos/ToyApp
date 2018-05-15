@@ -349,7 +349,7 @@ def closeConnections(remote_dbs, masterDB , master_node):
         if len(fetchedValues) == 0:
             synced = True
             if master_node:
-                time.sleep(10)
+                time.sleep(30)
         else:
             time.sleep(1)
 
