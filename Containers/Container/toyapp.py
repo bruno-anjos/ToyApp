@@ -26,7 +26,7 @@ CONST_ARG_FILE_NAME = "args.txt"
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 BASELINE_MODE = False
 
 def main(argv):
@@ -48,12 +48,12 @@ def main(argv):
         sys.exit(1)
 
     elif len(argv) == 5:
-        DEBUG_MODE = False
+        DEBUG_MODE = True
         BASELINE_MODE = False
         
 
     elif len(argv) > 5:
-        for arg in argv[5::]:
+        for arg in argv:
             if str(arg) == "debug":
                 DEBUG_MODE = True
                 print("debug mode ON")
@@ -183,10 +183,15 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Closing DB connections.")
 
-    closeConnections(remote_dbs, masterDB , master_node)
+    while getRowsInDB(db.cursor()) != maxInsertions * numClients:
+        print("expected: " + str(maxInsertions * numClients))
+        print("have: " + str(getRowsInDB(db.cursor())))
+        time.sleep(0.2)
 
     endTime = time.time()
     runningTime = endTime - startTime
+
+    closeConnections(remote_dbs, masterDB , master_node)
 
     if DEBUG_MODE:
         print("[DEBUG] Closing Toy App. App ran for " + str(runningTime) + " seconds.")
@@ -199,6 +204,10 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     localCursor.close()
     db.close()
 
+def getRowsInDB(cursor):
+    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+    fetchedValues = cursor.fetchall()
+    return len(fetchedValues)
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
 # plus a random float number to add even more randomness to the timestamp
