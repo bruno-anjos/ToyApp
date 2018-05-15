@@ -186,7 +186,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     while getRowsInDB(db.cursor()) != maxInsertions * numClients:
         print("expected: " + str(maxInsertions * numClients))
         print("have: " + str(getRowsInDB(db.cursor())))
-        time.sleep(0.2)
+        time.sleep(0.5)
 
     endTime = time.time()
     runningTime = endTime - startTime
@@ -341,7 +341,7 @@ def closeConnections(remote_dbs, masterDB , master_node):
     cursor.execute(deleteString)
 
     while not synced:
-        cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
+        cursor.execute("SELECT " + CONST_DB_SYNCED_TABLENAME + " FROM " + CONST_DB_TABLENAME)
         fetchedValues = cursor.fetchall()
 
         if DEBUG_MODE:
