@@ -1,5 +1,7 @@
 #!/bin/bash
-docker rm -f $(docker ps -a -q) | grep "" # removes all containers
+docker rm -f $(docker ps -a -q)  # removes all containers
+docker volume prune -f
+
 
 
 nContainers=$1 # the number of containers to open
