@@ -341,7 +341,7 @@ def closeConnections(remote_dbs, masterDB , master_node):
     cursor.execute(deleteString)
 
     while not synced:
-        cursor.execute("SELECT " + CONST_DB_SYNCED_TABLENAME + " FROM " + CONST_DB_TABLENAME)
+        cursor.execute("SELECT " + CONST_DB_SYNCED_TABLENAME + " FROM " + CONST_DB_SYNCED_COL_NAME)
         fetchedValues = cursor.fetchall()
 
         if DEBUG_MODE:
