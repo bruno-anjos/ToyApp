@@ -205,7 +205,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     db.close()
 
 def getRowsInDB(cursor):
-    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
     fetchedValues = cursor.fetchall()
     return len(fetchedValues)
 
@@ -341,7 +341,7 @@ def closeConnections(remote_dbs, masterDB , master_node):
     cursor.execute(deleteString)
 
     while not synced:
-        cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_SYNCED_TABLENAME)
+        cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
         fetchedValues = cursor.fetchall()
 
         if DEBUG_MODE:
