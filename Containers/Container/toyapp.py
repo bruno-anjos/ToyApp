@@ -123,6 +123,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] IP List: " + str(ip_list))
 
+    startTime = time.time()
+
     remote_dbs = init_db_connections(numClients, ip_list)
 
     if DEBUG_MODE:
@@ -130,13 +132,14 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     queuedInserts = deque([])
 
-    # Guarantees everyone is synced
     if DEBUG_MODE:
         print("[DEBUG] Starting sync phase...")
+
+    sync_dbs(masterDB, numClients)
+
+    if DEBUG_MODE:
         print("[DEBUG] Synced.")
 
-    startTime = time.time()
-    sync_dbs(masterDB, numClients)
     endTime = time.time()
     syncTime = endTime - startTime
 
@@ -335,7 +338,7 @@ def build_ip_list(startingIP, numClients):
 
     # Inserts all IPs except own IP
     for i in range(0, numClients):
-        
+
         if DEBUG_MODE:
             print("[DEBUG] startingIP + i: " + str(startingIP + i))
             print("[DEBUG] localIP: " + str(localIP))
