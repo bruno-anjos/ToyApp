@@ -100,7 +100,6 @@ def getSleepTime(timesPerMin):
 # main script loop, runs until it has inserted @arg maxInsertions tuples
 # every x seconds will insert a tuple into the database
 def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
-    startTime = time.time()
     sleepTime = getSleepTime(insertPerMin)
 
     if DEBUG_MODE:
@@ -136,6 +135,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         print("[DEBUG] Starting sync phase...")
         sync_dbs(masterDB, numClients)
         print("[DEBUG] Synced.")
+        
+    startTime = time.time()
 
     while counter < maxInsertions:
         # Gets data to insert
