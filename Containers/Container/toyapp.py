@@ -191,15 +191,16 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Closing DB connections.")
 
+    endTime = time.time()
+    runningTime = endTime - startTime
+
+    startTime = time.time()
+
     while getRowsInDB(db.cursor()) != maxInsertions * numClients:
         print("expected: " + str(maxInsertions * numClients))
         print("have: " + str(getRowsInDB(db.cursor())))
         time.sleep(0.5)
 
-    endTime = time.time()
-    runningTime = endTime - startTime
-
-    startTime = time.time()
     closeConnections(remote_dbs, masterDB , master_node)
     endTime = time.time()
 
