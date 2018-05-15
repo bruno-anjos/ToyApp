@@ -133,9 +133,13 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     # Guarantees everyone is synced
     if DEBUG_MODE:
         print("[DEBUG] Starting sync phase...")
-        sync_dbs(masterDB, numClients)
         print("[DEBUG] Synced.")
-        
+
+    startTime = time.time()
+    sync_dbs(masterDB, numClients)
+    endTime = time.time()
+    syncTime = endTime - startTime
+
     startTime = time.time()
 
     while counter < maxInsertions:
@@ -192,7 +196,11 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     endTime = time.time()
     runningTime = endTime - startTime
 
+    startTime = time.time()
     closeConnections(remote_dbs, masterDB , master_node)
+    endTime = time.time()
+
+    desyncTime = endTime - startTime
 
     if DEBUG_MODE:
         print("[DEBUG] Closing Toy App. App ran for " + str(runningTime) + " seconds.")
@@ -200,7 +208,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     localCursor = db.cursor()
     average, rowCount = getAverage(localCursor)
 
-    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address())
+    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address(), syncTime, desyncTime)
 
     localCursor.close()
     db.close()
@@ -262,7 +270,7 @@ def getDatabaseSize(cursor):
         print("[DEBUG] Database size in MB is: " + str(size[1]))
     return str(size[1])
 
-def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP):
+def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTime):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
@@ -271,7 +279,11 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP):
 
     statsFile = open("/log/toyapp_log_" + str(IP) , "w")
     statsFile.write("My IP is " + str(IP) + "\n")
+
+    statsFile.write("SyncTime  " + str(syncTime) + " seconds\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
+    statsFile.write("Desync time " + str(desyncTime) + " seconds\n")
+
     statsFile.write("Row Count is: " + str(rowCount) + "\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
     statsFile.write("Database size in MB is " + str(sizeDB) + "\n")
@@ -323,8 +335,11 @@ def build_ip_list(startingIP, numClients):
 
     # Inserts all IPs except own IP
     for i in range(0, numClients):
-        print("[DEBUG] startingIP + i: " + str(startingIP + i))
-        print("[DEBUG] localIP: " + str(localIP))
+        
+        if DEBUG_MODE:
+            print("[DEBUG] startingIP + i: " + str(startingIP + i))
+            print("[DEBUG] localIP: " + str(localIP))
+
         if str(startingIP + i) == str(localIP):
             continue
         else:
@@ -350,7 +365,6 @@ def closeConnections(remote_dbs, masterDB , master_node):
         if len(fetchedValues) == 0:
             synced = True
             if master_node:
-                print("Entries in sync database: " + str(len(fetchedValues)))
                 time.sleep(20)
         else:
             time.sleep(3)
