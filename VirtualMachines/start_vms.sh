@@ -15,7 +15,7 @@ while [ $counter -lt $nVM ]; do
 	last_component=$((${ip_components[3]} + counter))
 	curr_IP="${ip_components[0]}.${ip_components[1]}.${ip_components[2]}.${last_component}"
 
-	command="cd Toyapp/VirtualMachines && bash init_VM.sh"
+	command="cd ToyApp/VirtualMachines && bash init_VM.sh"
 
 	echo "copying args to: $curr_IP"
 	scp -i $rsa_key args.txt root@$curr_IP:~/ToyApp/Containers/Container/args.txt
