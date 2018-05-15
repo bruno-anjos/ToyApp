@@ -349,9 +349,10 @@ def closeConnections(remote_dbs, masterDB , master_node):
         if len(fetchedValues) == 0:
             synced = True
             if master_node:
-                time.sleep(30)
+                print("Entries in sync database: " + str(len(fetchedValues)))
+                time.sleep(20)
         else:
-            time.sleep(1)
+            time.sleep(3)
 
     #close all remote connections first
     for rdb in remote_dbs:
