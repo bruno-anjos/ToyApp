@@ -141,6 +141,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         print("[DEBUG] Synced.")
 
     endTime = time.time()
+
+    time.sleep(60)
+
     syncTime = endTime - startTime
 
     startTime = time.time()
