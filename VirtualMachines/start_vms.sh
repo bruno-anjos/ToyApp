@@ -1,6 +1,7 @@
-insPerMin=$1 	# number of insertions per minute in the python app
-maxInserts=$2 	# the python app timeout
-nVM=$3		 	# the number of vms to open
+#!/bin/bash
+insPerMin=$2 	# number of insertions per minute in the python app
+maxInserts=$3 	# the python app timeout
+nVM=$1		 	# the number of vms to open
 startingIP=$4 	# the IP of vm0
 batchSize=$5 	# how many insertions per batch 
 rsa_key=$6

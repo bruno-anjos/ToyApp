@@ -1,6 +1,8 @@
+#!/bin/bash
 startingIP=$1 	# the IP of vm0
 nVM=$2 
 rsa_key=$3
+test=$4
 
 ip_components=($(echo "$startingIP" | tr '.' '\n'))
 mkdir ~/Desktop/VMLogs
@@ -12,7 +14,8 @@ while [ $counter -lt $nVM ]; do
 	curr_IP="${ip_components[0]}.${ip_components[1]}.${ip_components[2]}.${last_component}"
 
 	echo "copying results"
-	scp -i $rsa_key root@$curr_IP:"/log/toyapp_log_$curr_IP" ~/Desktop/VMLogs/"VM$counter"
+	mkdir ~/Desktop/VMLogs/"Test_$test"
+	scp -i $rsa_key root@$curr_IP:"/log/toyapp_log_$curr_IP" ~/Desktop/VMLogs/"Test_$test"/"VM$counter"
 	
 	echo "counter: $counter"
 	((counter++))

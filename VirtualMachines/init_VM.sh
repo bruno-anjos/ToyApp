@@ -1,3 +1,4 @@
+#!/bin/bash
 echo "starting mysql service"
 service mysql start
 echo "running DB script"

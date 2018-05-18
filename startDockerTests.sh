@@ -5,7 +5,7 @@ rsa_key=$2
 sleep_time=$3
 ip=10.170.138.198
 
-if [ ! -d "$DIRECTORY" ]; then
+if [ ! -d ~/Desktop/DockerLogs/ ]; then
     mkdir ~/Desktop/DockerLogs/
 fi
 
@@ -15,7 +15,7 @@ while IFS='' read -r line || [[ -n "$line" ]]; do
     echo "Deleting container logs..."
     ssh -i $rsa_key root@$ip rm -f ~/Desktop/ContainerLogs/*
     echo "Starting test $line"
-    command="cd ToyApp/Containers/ && $line"
+    command="cd ToyApp/Containers/ && ./start_containers.sh $line"
     screen -d -m -L ssh -i $rsa_key root@$ip $command
     echo "Will sleep $sleep_time"
     sleep $sleep_time
