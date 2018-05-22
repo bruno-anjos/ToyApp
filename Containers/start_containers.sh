@@ -10,7 +10,7 @@ maxInserts=$3 # the python app timeout
 startingIP=$4 #the IP of Container0
 batchSize=$5 #how many insertions per batch 
 
-imageName=brunoanjos/toyapp # fetches the image name in the logs file
+imageName=$(cat logs/image_name.log) # fetches the image name in the logs file
 command="bash init_container.sh $insPerMin $maxInserts $nContainers $startingIP $batchSize" # built command to pass to the container
 counter=0 
 
