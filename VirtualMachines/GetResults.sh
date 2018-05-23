@@ -5,7 +5,10 @@ rsa_key=$3
 test=$4
 
 ip_components=($(echo "$startingIP" | tr '.' '\n'))
-mkdir ~/Desktop/VMLogs
+
+if [ ! -d ~/Desktop/VMLogs/ ]; then
+    mkdir ~/Desktop/VMLogs/
+fi
 
 counter=0 
 while [ $counter -lt $nVM ]; do
@@ -14,9 +17,12 @@ while [ $counter -lt $nVM ]; do
 	curr_IP="${ip_components[0]}.${ip_components[1]}.${ip_components[2]}.${last_component}"
 
 	echo "copying results"
-	mkdir ~/Desktop/VMLogs/"Test_$test"
+
+	if [ ! -d ~/Desktop/VMLogs/"Test_$test" ]; then
+    	    mkdir ~/Desktop/VMLogs/"Test_$test"
+	fi
+
 	scp -i $rsa_key root@$curr_IP:"/log/toyapp_log_$curr_IP" ~/Desktop/VMLogs/"Test_$test"/"VM$counter"
-	
 	echo "counter: $counter"
 	((counter++))
 

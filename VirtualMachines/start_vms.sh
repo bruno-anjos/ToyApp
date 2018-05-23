@@ -6,9 +6,11 @@ startingIP=$4 	# the IP of vm0
 batchSize=$5 	# how many insertions per batch 
 rsa_key=$6
 
+args_file="args.txt"
+
 ip_components=($(echo "$startingIP" | tr '.' '\n'))
 
-echo "$1 $2 $3 $4 $5" > args.txt
+echo "$2 $3 $1 $4 $5" > $args_file
 
 counter=0 
 while [ $counter -lt $nVM ]; do
@@ -19,7 +21,7 @@ while [ $counter -lt $nVM ]; do
 	command="cd ToyApp/VirtualMachines && bash init_VM.sh"
 
 	echo "copying args to: $curr_IP"
-	scp -i $rsa_key args.txt root@$curr_IP:~/ToyApp/Containers/Container/args.txt
+	scp -i $rsa_key $args_file root@$curr_IP:~/ToyApp/Containers/Container/args.txt
 	echo "Starting app on: $curr_IP"
 	screen -d -m -L ssh -i $rsa_key root@$curr_IP $command
 
