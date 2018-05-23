@@ -287,7 +287,7 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
     statsFile = open("/log/toyapp_log_" + str(IP) , "w")
     statsFile.write("My IP is " + str(IP) + "\n")
 
-    statsFile.write("SyncTime  " + str(syncTime) + " seconds\n")
+    statsFile.write("SyncTime " + str(syncTime) + " seconds\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Desync time " + str(desyncTime) + " seconds\n")
 
