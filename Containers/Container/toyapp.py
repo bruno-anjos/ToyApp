@@ -203,9 +203,12 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     while getRowsInDB(db.cursor()) != maxInsertions * numClients:
         print("expected: " + str(maxInsertions * numClients))
         print("have: " + str(getRowsInDB(db.cursor())))
-        time.sleep(0.5)
+        time.sleep(2)
+
+    spentWaitingForOthers = time.time() - startTime
 
     closeConnections(remote_dbs, masterDB , master_node)
+
     endTime = time.time()
 
     desyncTime = endTime - startTime
@@ -216,7 +219,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     localCursor = db.cursor()
     average, rowCount = getAverage(localCursor)
 
-    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address(), syncTime, desyncTime)
+    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address(), syncTime, desyncTime , spentWaitingForOthers)
 
     localCursor.close()
     db.close()
@@ -278,7 +281,7 @@ def getDatabaseSize(cursor):
         print("[DEBUG] Database size in MB is: " + str(size[1]))
     return str(size[1])
 
-def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTime):
+def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTime , spentWaitingForOthers):
     if DEBUG_MODE:
         print("[DEBUG] Writing stats to file...")
 
@@ -290,7 +293,10 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
 
     statsFile.write("SyncTime " + str(syncTime) + " seconds\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
-    statsFile.write("Desync time " + str(desyncTime) + " seconds\n")
+    statsFile.write("Desync time total" + str(desyncTime) + " seconds\n")
+    statsFile.write("Waiting for others " + str(spentWaitingForOthers) + " seconds\n")
+    statsFile.write("Desync time " + str(desyncTime - spentWaitingForOthers) + " seconds\n")
+
 
     statsFile.write("Row Count is: " + str(rowCount) + "\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
