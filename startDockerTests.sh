@@ -12,10 +12,10 @@ counter=1
 cd /root/ToyApp/Containers/
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-    rm -f "~/Desktop/ContainerLogs/*"
+    rm -f "~/ContainerLogs/Temp/*"
     ./start_containers.sh ${line}
     sleep ${sleep_time}
-    mkdir "~/Desktop/Test_"${counter}"/"
-    mv "~/Desktop/ContainerLogs/*" "~/Desktop/Test_"${counter}"/"
+    mkdir "~/ContainerLogs/Test_"${counter}"/"
+    mv "~/ContainerLogs/Temp/*" "~/ContainerLogs/Test_"${counter}"/"
     ((counter++))
 done < "$tests_file"
