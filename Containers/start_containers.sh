@@ -28,5 +28,6 @@ while [ $counter -lt $nContainers ]; do
 	echo "Starting $containerName" 
 	mkdir ramdisk/$containerName
 	docker run -d -v ~/Desktop/ContainerLogs:/log -v $(pwd)/ramdisk/$containerName:~/ramdisk --name $containerName $imageName $command
+
 	((counter++))
 done
