@@ -3,10 +3,6 @@
 tests_file=$1
 sleep_time=$2
 
-if [ ! -d ~/Desktop/DockerLogs/ ]; then
-    mkdir ~/Desktop/DockerLogs/
-fi
-
 counter=1
 
 cd /root/ToyApp/Containers/
