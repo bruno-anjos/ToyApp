@@ -15,7 +15,7 @@ counter=0
 
 while [ $counter -lt $nContainers ]; do
 	containerName="Container$counter" 
-	echo "Starting $containerName" 
-	docker run -d --mount type=tmpfs,destination=/var/lib/mysql,tmpfs-mode=0777 -v ~/Desktop/ContainerLogs:/log --name $containerName $imageName $command
+	echo "Starting $containerName"
+	docker run -d --mount type=tmpfs,destination=/var/lib/mysql ,tmpfs-mode=0777 -v ~/Desktop/ContainerLogs:/log --name $containerName $imageName $command
 	((counter++))
 done
