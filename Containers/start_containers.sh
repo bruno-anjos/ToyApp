@@ -16,8 +16,6 @@ counter=0
 while [ $counter -lt $nContainers ]; do
 	containerName="Container$counter" 
 	echo "Starting $containerName" 
-	mkdir ramdisk/$containerName
 	docker run -d --tmpfs / -v ~/Desktop/ContainerLogs:/log $containerName $imageName $command
-
 	((counter++))
 done
