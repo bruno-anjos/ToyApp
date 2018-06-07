@@ -41,6 +41,7 @@ def main(argv):
 
 
     if len(argv) < 5:
+        print("reading args from file")
         argv = readArgsFromFile()
    
     if len(argv) < 5:
@@ -52,15 +53,15 @@ def main(argv):
         BASELINE_MODE = False
         
 
-    elif len(argv) > 5:
-        for arg in argv:
-            if str(arg) == "debug":
-                DEBUG_MODE = True
-                print("debug mode ON")
-                
-            if str(arg) == "baseline":
-                BASELINE_MODE = True
-                print("Baseline mode ON")
+#    elif len(argv) > 5:
+#        for arg in argv:
+#            if str(arg) == "debug":
+#                DEBUG_MODE = True
+#                print("debug mode ON")
+#                
+#            if str(arg) == "baseline":
+#                BASELINE_MODE = True
+#                print("Baseline mode ON")
     
 
     # Get starting parameters
