@@ -17,6 +17,6 @@ counter=0
 while [ $counter -lt $nContainers ]; do
 	containerName="Container$counter" 
 	echo "Starting $containerName" 
-	docker run -d -v ~/ContainerLogs/Temp/:/log --name $containerName $imageName $command
+	docker run -d -v /root/ContainerLogs/Temp/:/log --name $containerName $imageName $command
 	((counter++))
 done
