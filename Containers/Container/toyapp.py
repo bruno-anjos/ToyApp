@@ -150,12 +150,16 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     startTime = time.time()
 
     while counter < maxInsertions:
+
+
+        # Inserts in local DB
+        insertionTime = time.time()
+
         # Gets data to insert
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
 
-        # Inserts in local DB
-        insertionTime = time.time()
+
         insertIntoDB(db.cursor(), [(key, value)])
 
         if not BASELINE_MODE:
@@ -221,9 +225,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     db.close()
 
 def getRowsInDB(cursor):
-    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
-    fetchedValues = cursor.fetchall()
-    return len(fetchedValues)
+    cursor.execute("SELECT count(*) FROM " + CONST_DB_TABLENAME)
+    return cursor.fetchone()[0]
+     
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
 # plus a random float number to add even more randomness to the timestamp
@@ -289,9 +293,9 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
 
     statsFile.write("SyncTime " + str(syncTime) + " seconds\n")
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
-    statsFile.write("Desync time total" + str(desyncTime) + " seconds\n")
+    statsFile.write("Desync time total " + str(desyncTime) + " seconds\n")
     statsFile.write("Waiting for others " + str(spentWaitingForOthers) + " seconds\n")
-    statsFile.write("Desync time method" + str(desyncTime - spentWaitingForOthers) + " seconds\n")
+    statsFile.write("Desync time method " + str(desyncTime - spentWaitingForOthers) + " seconds\n")
 
 
     statsFile.write("Row Count is: " + str(rowCount) + "\n")
@@ -359,6 +363,7 @@ def build_ip_list(startingIP, numClients):
 
 
 def closeConnections(remote_dbs, masterDB , master_node):
+
     synced = False
 
     deleteString = "DELETE FROM " + CONST_DB_SYNCED_TABLENAME + " WHERE " + CONST_DB_SYNCED_COL_NAME + " = " + "\'" + str(get_ip_address()) + "\'"
