@@ -8,7 +8,6 @@ mkdir /ramdisk/mysqldata
 mkdir /ramdisk/mysqltemp
 
 chmod -R 777 /ramdisk
-chown mysql:mysql /ramdisk
 
 echo "[mysqld]" >> /etc/mysql/my.cnf	
 echo "innodb_use_native_aio = 0" >> /etc/mysql/my.cnf
