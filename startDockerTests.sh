@@ -8,10 +8,10 @@ mkdir /root/ContainerLogs/
 cd /root/ToyApp/Containers/
 
 while IFS='' read -r line || [[ -n "$line" ]]; do
-    rm -f "/root/Desktop/ContainerLogs/*"
+    rm -f /root/Desktop/ContainerLogs/*
     ./start_containers.sh ${line}
     sleep ${sleep_time}
-    mkdir "/root/ContainerLogs/Test_"${counter}
-    mv "/root/Desktop/ContainerLogs/*" "/root/ContainerLogs/Test_"${counter}"/"
+    mkdir /root/ContainerLogs/Test_${counter}
+    mv /root/Desktop/ContainerLogs/* /root/ContainerLogs/Test_${counter}/
     ((counter++))
 done < "$tests_file"
