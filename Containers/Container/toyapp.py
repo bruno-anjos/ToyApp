@@ -49,7 +49,7 @@ def main(argv):
         sys.exit(1)
 
     elif len(argv) == 5:
-        DEBUG_MODE = False
+        DEBUG_MODE = True
         BASELINE_MODE = False
         
 
@@ -151,14 +151,13 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     while counter < maxInsertions:
 
-
         # Inserts in local DB
         insertionTime = time.time()
 
         # Gets data to insert
+
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
-
 
         insertIntoDB(db.cursor(), [(key, value)])
 
@@ -177,14 +176,16 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         afterInsertionTime = time.time()
         timeTook = afterInsertionTime - insertionTime
 
-        # Sleeps remaining time
-        if DEBUG_MODE:
-            print("[DEBUG] Will sleep " + str(sleepTime - timeTook) + " seconds.")
+        timeAvailable = startTime + ((counter + 1) * sleepTime) - afterInsertionTime
             
         if sleepTime - timeTook < 0:
-            print("[DEBUG] can't keep up!, late by " + str(sleepTime - timeTook) + " ms")
+            if DEBUG_MODE:
+                print("[DEBUG] can't keep up!, late by " + str(sleepTime - timeTook) + " ms")
         else:
-            time.sleep(sleepTime - timeTook)
+            if DEBUG_MODE:
+                print("[DEBUG] Will sleep " + str(timeAvailable) + " seconds.")
+            time.sleep(timeAvailable)
+
         counter += 1
 
 
@@ -255,13 +256,11 @@ def insertIntoDB(cursor, values):
 
 # gets the average from all the tuples in the database and returns it
 def getAverage(cursor):
-    cursor.execute("SELECT " + CONST_DB_NUM_COL_NAME + " FROM " + CONST_DB_TABLENAME)
-    sum_col = 0
-    counter = 0
-    for row in cursor.fetchall():
-        sum_col += row[0]
-        counter+= 1
-    avg = sum_col / counter
+    cursor.execute("SELECT AVG(" + CONST_DB_NUM_COL_NAME + "), SUM(" + CONST_DB_NUM_COL_NAME + "), COUNT(" + CONST_DB_NUM_COL_NAME + ") FROM " + CONST_DB_TABLENAME)
+    res = cursor.fetchone()
+    avg = float(res[0])
+    sum_col = int(res[1])
+    counter = res[2]
 
     print("Sum is: " + str(sum_col))
     print("Row count is: " + str(counter))
@@ -296,7 +295,6 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
     statsFile.write("Desync time total " + str(desyncTime) + " seconds\n")
     statsFile.write("Waiting for others " + str(spentWaitingForOthers) + " seconds\n")
     statsFile.write("Desync time method " + str(desyncTime - spentWaitingForOthers) + " seconds\n")
-
 
     statsFile.write("Row Count is: " + str(rowCount) + "\n")
     statsFile.write("Average in DB is " + str(avg) + "\n")
