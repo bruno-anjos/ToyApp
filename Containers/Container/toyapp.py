@@ -157,9 +157,6 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         # Inserts in local DB
         insertionTime = time.time()
         insertIntoDB(db.cursor(), [(key, value)])
-        if DEBUG_MODE:
-            print("[DEBUG] Inserted \"" + key + "\" with value " + str(value) + " and took " + str(
-                round(timeTook, 2)) + " seconds")
 
         if not BASELINE_MODE:
             # Adds to queue
