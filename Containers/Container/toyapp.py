@@ -48,9 +48,9 @@ def main(argv):
         print(CONST_USAGE)
         sys.exit(1)
 
-#    elif len(argv) == 5:
-#        DEBUG_MODE = False
-#        BASELINE_MODE = False
+    elif len(argv) == 5:
+        DEBUG_MODE = True
+        BASELINE_MODE = False
         
 
 #    elif len(argv) > 5:
