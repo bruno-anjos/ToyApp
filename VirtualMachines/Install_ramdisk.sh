@@ -9,5 +9,6 @@ mkdir /ramdisk/mysqldata
 mkdir /ramdisk/mysqltemp
 
 chmod -R 777 /ramdisk
+chmod 600 /etc/my.cnf
 chown mysql:mysql /ramdisk
 
