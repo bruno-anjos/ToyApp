@@ -49,7 +49,7 @@ def main(argv):
         sys.exit(1)
 
     elif len(argv) == 5:
-        DEBUG_MODE = True
+        DEBUG_MODE = False
         BASELINE_MODE = False
         
 
