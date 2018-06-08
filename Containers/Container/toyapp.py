@@ -157,8 +157,6 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         # Inserts in local DB
         insertionTime = time.time()
         insertIntoDB(db.cursor(), [(key, value)])
-        afterInsertionTime = time.time()
-        timeTook = afterInsertionTime - insertionTime
         if DEBUG_MODE:
             print("[DEBUG] Inserted \"" + key + "\" with value " + str(value) + " and took " + str(
                 round(timeTook, 2)) + " seconds")
@@ -169,24 +167,25 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
             # Checks if need to flush queue to remote DBs
             if len(queuedInserts) >= batchSize:
-                insertionTime = time.time()
                 for rdb in remote_dbs:
                     insertIntoDB(rdb.cursor(), queuedInserts)
-                afterInsertionTime = time.time()
                 while queuedInserts:
                     queuedInserts.pop()
-                if DEBUG_MODE:
-                    print("[DEBUG] Took " + str(
-                        afterInsertionTime - insertionTime) + " seconds to insert in remote databases.")
+
+
+        afterInsertionTime = time.time()
+        timeTook = afterInsertionTime - insertionTime
 
         # Sleeps remaining time
         if DEBUG_MODE:
             print("[DEBUG] Will sleep " + str(sleepTime - timeTook) + " seconds.")
+            
         if sleepTime - timeTook < 0:
             print("[DEBUG] can't keep up!, late by " + str(sleepTime - timeTook) + " ms")
         else:
             time.sleep(sleepTime - timeTook)
         counter += 1
+
 
     if len(queuedInserts) > 0:
         for rdb in remote_dbs:
