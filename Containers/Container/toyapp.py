@@ -26,7 +26,7 @@ CONST_ARG_FILE_NAME = "args.txt"
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 BASELINE_MODE = False
 
 def main(argv):
@@ -294,7 +294,7 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
     statsFile.write("Ran for " + str(runningTime) + " seconds\n")
     statsFile.write("Desync time total" + str(desyncTime) + " seconds\n")
     statsFile.write("Waiting for others " + str(spentWaitingForOthers) + " seconds\n")
-    statsFile.write("Desync time " + str(desyncTime - spentWaitingForOthers) + " seconds\n")
+    statsFile.write("Desync time method" + str(desyncTime - spentWaitingForOthers) + " seconds\n")
 
 
     statsFile.write("Row Count is: " + str(rowCount) + "\n")
