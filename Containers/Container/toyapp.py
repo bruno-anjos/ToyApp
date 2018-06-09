@@ -256,11 +256,13 @@ def insertIntoDB(cursor, values):
 
 # gets the average from all the tuples in the database and returns it
 def getAverage(cursor):
-    cursor.execute("SELECT AVG(" + CONST_DB_NUM_COL_NAME + "), SUM(" + CONST_DB_NUM_COL_NAME + "), COUNT(" + CONST_DB_NUM_COL_NAME + ") FROM " + CONST_DB_TABLENAME)
+    cursor.execute("SELECT SUM(" + CONST_DB_NUM_COL_NAME + "), COUNT(" + CONST_DB_NUM_COL_NAME + ") FROM " + CONST_DB_TABLENAME)
     res = cursor.fetchone()
-    avg = float(res[0])
-    sum_col = int(res[1])
-    counter = res[2]
+    
+    sum_col = int(res[0])
+    
+    counter = res[1]
+    avg = sum_col / counter
 
     print("Sum is: " + str(sum_col))
     print("Row count is: " + str(counter))
