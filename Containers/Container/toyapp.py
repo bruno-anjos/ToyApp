@@ -178,9 +178,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
         timeAvailable = startTime + ((counter + 1) * sleepTime) - afterInsertionTime
             
-        if sleepTime - timeTook < 0:
+        if timeAvailable < 0:
             if DEBUG_MODE:
-                print("[DEBUG] can't keep up!, late by " + str(sleepTime - timeTook) + " ms")
+                print("[DEBUG] can't keep up!, late by " + str(timeAvailable) + " ms")
         else:
             if DEBUG_MODE:
                 print("[DEBUG] Will sleep " + str(timeAvailable) + " seconds.")
