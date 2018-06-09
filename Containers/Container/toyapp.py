@@ -123,6 +123,10 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     ip_list = build_ip_list(startingIP, numClients)
     shuffle(ip_list)
 
+    print("IP LIST:")
+    for ip in ip_list:
+        print(str(ip))
+
     startTime = time.time()
 
     remote_dbs = init_db_connections(numClients, ip_list)
