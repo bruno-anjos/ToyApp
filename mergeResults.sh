@@ -13,10 +13,11 @@ for folder in ${tests_folder}/*/; do
 done
 
 
-counter=0
+counter=1
 while [ $counter -lt $total ]; do
 	file="Test_${counter}/test.csv"
     echo "Merging ${file} with ${tests_folder}merged_results.csv..."
     cat $file >> ${tests_folder}/merged_results.csv
     printf "\n" >> ${tests_folder}/merged_results.csv
+    ((counter++))
 done
