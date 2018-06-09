@@ -16,7 +16,7 @@ done
 counter=0
 while [ $counter -lt $total ]; do
 	file="Test_${counter}/test.csv"
-    echo "Merging ${file} with ${tests_folder}/merged_results.csv..."
-    cat ${file} >> ${tests_folder}/merged_results.csv
+    echo "Merging ${file} with ${tests_folder}merged_results.csv..."
+    cat $file >> ${tests_folder}/merged_results.csv
     printf "\n" >> ${tests_folder}/merged_results.csv
 done
