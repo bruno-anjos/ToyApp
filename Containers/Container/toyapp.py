@@ -123,11 +123,6 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     ip_list = build_ip_list(startingIP, numClients)
     shuffle(ip_list)
 
-    print("IP LIST: " + ip_list)
-
-    if DEBUG_MODE:
-        print("[DEBUG] IP List: " + ip_list)
-
     startTime = time.time()
 
     remote_dbs = init_db_connections(numClients, ip_list)
@@ -339,8 +334,8 @@ def setupDatabase(ip):
 def init_db_connections(numClients, ip_list):
     remote_dbs = []
 
-    for i in range(1, numClients):
-        db = setupDatabase(ip_list[i - 1])
+    for ip in ip_list:
+        db = setupDatabase(ip)
         remote_dbs.append(db)
 
     return remote_dbs
