@@ -4,13 +4,18 @@ tests_folder=$1
 filterResultsPath=$2
 
 rm ${tests_folder}/merged_results.csv
+total=0
 
 for folder in ${tests_folder}/*/; do
     echo "Filtering results for folder ${folder}"
     ${filterResultsPath} ${folder}
+    ((total++))
 done
 
-for file in ${tests_folder}/*/test.csv; do
+
+counter=0
+while [ $counter -lt $total ]; do
+	file="Test_${counter}/test.csv"
     echo "Merging ${file} with ${tests_folder}/merged_results.csv..."
     cat ${file} >> ${tests_folder}/merged_results.csv
     printf "\n" >> ${tests_folder}/merged_results.csv
