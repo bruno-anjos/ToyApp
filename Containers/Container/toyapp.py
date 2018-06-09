@@ -126,7 +126,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     print("IP LIST: " + ip_list)
 
     if DEBUG_MODE:
-        print("[DEBUG] IP List: " + str(ip_list))
+        print("[DEBUG] IP List: " + ip_list)
 
     startTime = time.time()
 
