@@ -1,6 +1,7 @@
 #!/bin/bash
 
 tests_folder=$1
+results_folder=$2
 
 #AVERAGE LOOP
 IFS='
@@ -42,6 +43,7 @@ echo "Row counts are the same"
 #CREATE CSV
 echo "Creating CSV..."
 echo "IP, Sync, Ran, DeSync" > ${tests_folder}/test.csv
+counter=0
 
 for file in ${tests_folder}/toyapp*; do
     lines=$(head -5 "${file}")
@@ -50,7 +52,8 @@ for file in ${tests_folder}/toyapp*; do
     IFS=' ' read -r -a sync <<< "${lineArray[1]}"
     IFS=' ' read -r -a ran <<< "${lineArray[2]}"
     IFS=' ' read -r -a desync <<< "${lineArray[3]}"
-    echo "${ip[3]}, ${sync[1]}, ${ran[2]}, ${desync[3]}" >> ${tests_folder}/test.csv
+    echo "${ip[3]}, ${sync[1]}, ${ran[2]}, ${desync[3]}" >> ${results_folder}/test${counter}.csv
+    ((counter++))
 done
 
 echo "CSV created at ${tests_folder}/test.csv"
