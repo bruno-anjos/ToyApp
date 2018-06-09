@@ -26,7 +26,7 @@ CONST_ARG_FILE_NAME = "args.txt"
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
-DEBUG_MODE = False
+DEBUG_MODE = True
 BASELINE_MODE = False
 
 def main(argv):
