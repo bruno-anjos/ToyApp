@@ -7,6 +7,7 @@ import ipaddress
 import socket
 import gc
 import os
+from random import shuffle
 from collections import deque
 
 # Constants used throught the program
@@ -120,6 +121,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         masterDB = setupDatabase(startingIP)
 
     ip_list = build_ip_list(startingIP, numClients)
+    shuffle(ip_list)
+
+    print("IP LIST: " + ip_list)
 
     if DEBUG_MODE:
         print("[DEBUG] IP List: " + str(ip_list))
