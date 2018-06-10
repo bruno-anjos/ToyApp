@@ -4,7 +4,7 @@ logs_folder=$1
 filterResultsPath=$2
 
 rm ${logs_folder}/merged_results.csv
-total=0
+total=1
 
 for folder in ${logs_folder}/*/; do
     echo "Filtering results for folder ${folder}"
