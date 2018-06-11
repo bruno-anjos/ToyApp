@@ -15,6 +15,6 @@ pip3 install mysqlclient
 if [ ! -d "/root/ToyApp" ]; then
     git clone https://github.com/bruno-anjos/ToyApp.git
 fi
-cd ToyApp && git pull && cd ..
+cd /root/ToyApp && git pull && cd ..
 
-bash install_ramdisk.sh
+bash /root/ToyApp/VirtualMachines/install_ramdisk.sh
