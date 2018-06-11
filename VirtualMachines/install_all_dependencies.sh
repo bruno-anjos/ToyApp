@@ -15,7 +15,7 @@ while [ $counter -lt $nVM ]; do
 	echo "Installing dependencies"
 
 	scp -i $rsa_key $installer root@$curr_IP:~
-	ssh -i $rsa_key root@$curr_IP bash $installer
+	ssh -i $rsa_key root@$curr_IP bash ~/dependencies.sh
 
 	echo "counter: $counter"
 	((counter++))
