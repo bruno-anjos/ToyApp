@@ -13,8 +13,11 @@ yum install -y gcc
 sudo easy_install-3.4 pip
 pip3 install mysqlclient
 if [ ! -d "/root/ToyApp" ]; then
+    printf "No repository found"
     git clone https://github.com/bruno-anjos/ToyApp.git
 fi
+
+printf "Will pull repository"
 cd /root/ToyApp && git pull && cd ..
 
 bash /root/ToyApp/VirtualMachines/install_ramdisk.sh
