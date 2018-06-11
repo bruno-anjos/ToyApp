@@ -1,6 +1,6 @@
 #!/bin/bash
 echo "starting mysql service"
-service mysql start
+service mariadb start
 echo "running DB script"
 mysql < ../Containers/Container/DB_script.sql
 echo "starting toyapp....."
