@@ -12,6 +12,9 @@ yum install -y gcc
 
 sudo easy_install-3.4 pip
 pip3 install mysqlclient
-git clone https://github.com/bruno-anjos/ToyApp.git
+if [ ! -d "/root/ToyApp" ]; then
+    git clone https://github.com/bruno-anjos/ToyApp.git
+fi
+cd ToyApp && git pull && cd ..
 
 bash install_ramdisk.sh
