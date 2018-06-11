@@ -14,4 +14,4 @@ sudo easy_install-3.4 pip
 pip3 install mysqlclient
 git clone https://github.com/bruno-anjos/ToyApp.git
 
-./install_ramdisk
+bash install_ramdisk.sh
