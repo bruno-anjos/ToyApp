@@ -5,6 +5,8 @@ startingIP=$2 	# the IP of vm0
 rsa_key=$3
 toCopy=$4
 
+ip_components=($(echo "$startingIP" | tr '.' '\n'))
+
 
 counter=0 
 while [ $counter -lt $nVM ]; do
