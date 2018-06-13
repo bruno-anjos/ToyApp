@@ -1,3 +1,5 @@
+#!/bin/bash
+
 nVM=$1		 	# the number of vms to open
 startingIP=$2 	# the IP of vm0
 rsa_key=$3
