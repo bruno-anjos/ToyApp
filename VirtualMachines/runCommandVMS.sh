@@ -3,8 +3,7 @@
 nVM=$1		 	# the number of vms to open
 startingIP=$2 	# the IP of vm0
 rsa_key=$3
-toCopy=$4
-command=$5
+command=$4
 
 ip_components=($(echo "$startingIP" | tr '.' '\n'))
 
