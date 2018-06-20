@@ -28,7 +28,7 @@ CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
 DEBUG_MODE = False
-BASELINE_MODE = False
+BASELINE_MODE = True
 
 def main(argv):
     print("Starting toyapp")
@@ -51,7 +51,7 @@ def main(argv):
 
     elif len(argv) == 5:
         DEBUG_MODE = False
-        BASELINE_MODE = False
+        BASELINE_MODE = True
         
 
 #    elif len(argv) > 5:
@@ -162,7 +162,9 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
 
-        insertIntoDB(db.cursor(), [(key, value)])
+        if BASELINE_MODE:
+            for i in range(0, numClients):
+                insertIntoDB(db.cursor(), [(key, value+i)])
 
         if not BASELINE_MODE:
             # Adds to queue
@@ -189,7 +191,10 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
                 print("[DEBUG] Will sleep " + str(timeAvailable) + " seconds.")
             time.sleep(timeAvailable)
 
-        counter += 1
+        if not BASELINE_MODE:
+            counter += 1
+        elif BASELINE_MODE:
+            counter += numClients
 
 
     if len(queuedInserts) > 0:
@@ -204,10 +209,11 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     startTime = time.time()
 
-    while getRowsInDB(db.cursor()) != maxInsertions * numClients:
-        print("expected: " + str(maxInsertions * numClients))
-        print("have: " + str(getRowsInDB(db.cursor())))
-        time.sleep(2)
+    if not BASELINE_MODE:
+        while getRowsInDB(db.cursor()) != maxInsertions * numClients:
+            print("expected: " + str(maxInsertions * numClients))
+            print("have: " + str(getRowsInDB(db.cursor())))
+            time.sleep(2)
 
     spentWaitingForOthers = time.time() - startTime
 
