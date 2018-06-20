@@ -43,7 +43,7 @@ echo "Row counts are the same"
 echo "Creating CSV..."
 echo "IP, Sync, Ran, DeSync" > ${tests_folder}/test.csv
 
-for file in ${tests_folder}/toyapp*; do
+for file in ${tests_folder}/*; do
     lines=$(head -5 "${file}")
     IFS=$'\n' read -rd '' -a lineArray <<<"${lines}"
     IFS=' ' read -r -a ip <<< "${lineArray[0]}"
