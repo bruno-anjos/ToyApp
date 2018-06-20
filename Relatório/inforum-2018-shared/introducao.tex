@@ -1,0 +1,77 @@
+
+\section{Introdução}
+
+\subsection{XXXXXXXXXX }
+
+{ \color{blue} Explicar a razão de ser do trabalho, porque foi necessário, como se fez e dar uma
+breve panoramica dos resultados - usar parte do abstract que passará a ser mais resumido.}
+
+
+
+Dada a complexidade e as dificuldades associadas ao teste de
+protocolos distribuídos para controlo de equipamentos de rede num
+contexto real, é comum recorrer a emulação para teste dos mesmos. Os
+primeiros emuladores recorriam a máquinas reais, interligadas através
+de um sistema de emulação do tempo de trânsito e da perda de pacotes
+numa rede real [ModelNet].
+
+Com o desenvolvimento das tecnologias de virtualização, seja esta através de
+máquinas virtuais ou de \conts, tornou-se atractivo substituir as
+máquinas reais e os equipamentos de comutação por sistemas
+virtualizados. Um dos sistemas mais populares que seguem esta
+abordagem é o sistema MiniNet \cite{Lantz:2010:NLR:1868447.1868466}, para emulação de redes
+controladas com a abordagem Software Defined Networking e o protocolo
+OpenFlow. Outros sistemas, que utilizam outros protocolos e outros
+tipos de equipamentos de comutação, utilizam para o mesmo efeito
+máquinas virtuais [ Cisco ].
+
+No quadro de um projecto em que se pretende testar protocolos de
+controlo de equipamentos de rede mais complexos que os switches
+OpenFlow, e utilizando protocolos distribuídos com semântica de falhas
+bem definidas, da classe dos usados em bases de dados distribuídas,
+coloca-se o problema de decidir qual a tecnologia de virtualização a
+utilizar: máquinas virtuais (VMs) ou {\conts} implementados pelo sistema
+Docker.
+
+Este artigo apresenta um estudo empírico comparativo das tecnologias:
+máquinas virtuais implementadas sobre o hipervisor 
+ESXi da VMWare e containers Docker suportados quer no interior de VMs, quer em modo nativo.
+A execução de containers no interior de VMs, parecendo um contrasenso, 
+não o é de facto pois a maioria das plataformas de grande escala (e.g., \clouds)
+hoje acessíveis não disponibiliza acesso nativo aos utilizadores.
+
+Foi então realizado um plano de trabalhos, visando definir os objectivos do projecto de investigação e estabelecer alguns \textit{deadlines} e a respectiva alocação de tempo para cada tarefa.
+
+{\discutir{\textbf{VALE A PENA COLOCAR AQUI O PLANO DE TRABALHOS?}}}
+
+\textbf{Semana 1 (8/4/2018 : 15/4/2018)}
+
+\begin{enumerate}
+\item Automatizar o deployment da aplicação de teste para  executar múltiplos testes num quadro simples de um container por nó
+\end{enumerate}
+
+\textbf{Semanas 2 a 4 (15/4/2018 : 6/5/2018)}
+
+
+\begin{enumerate}
+\item Estudar as tecnologias presentes e descobrir as diferenças fundamentais entre as mesmas
+\item Formular uma hipótese sobre qual a  raiz das diferenças de desempenho
+\item Identificar os parâmetros e configurações a medir que permitam efetuar a comparação de resultados de forma rigorosa
+
+\end{enumerate}
+
+\textbf{Semana 5 a 7 (6/5/2018 : 27/5/2018)}
+
+\begin{enumerate}
+\item Definir cenários (um ou mais servidores) e parâmetros de teste
+\item Executar os testes
+\item Analisar os resultados obtidos
+\end{enumerate}
+
+
+\textbf{Semana 8 a 9 (27/5/2018 : 10/6/2018)}
+
+\begin{enumerate}
+\item Consolidar a análise dos dados obtidos
+\item Elaboração do relatório
+\end{enumerate}

@@ -1,0 +1,13 @@
+
+\section{Conclusões e trabalho futuro}
+
+Dada a complexidade e as dificuldades associadas ao teste de
+protocolos distribuídos para controlo de equipamentos de rede num
+contexto real, é comum recorrer a emulação para teste dos mesmos. Os
+primeiros emuladores recorriam a máquinas reais, interligadas através
+de um sistema de emulação do tempo de trânsito e da perda de pacotes
+numa rede real [ModelNet].
+
+\discutir{\textbf{DEPOIS VÊ SE CONCORDAS}}
+
+Houveram alguns precalços nomeadamente na utilização do motor de base de dados, pois sabendo que os \textit{benchmarks} são testes de performance, há uma necessidade de otimizar o motor de base de dados de forma a introduzir o menor \textit{overhead} possível, pois o objectivo em questão é verificar a performance consoante as variáveis mencionadas em \ref{benchs}. Foi discutido o aumento do número de \textit{threads} de escrita na base de dados visando melhorias ao nível do paralelismo, mas a ideia acabou por ser descartada, devido ao número de núcleos lógicos atribuído a cada máquina virtual. O maior imprevisto que pode ser tido em conta num trabalho futuro, surgiu aquando dos testes nas máquinas virtuais, em que, na fase de sincronização (ver \ref{func}), cada máquina virtual demorava bastante tempo (por volta de 5 minutos) a abrir as conexões para as restantes instâncias. Após algum aprofundamento da questão, chegou-se à conclusão de que estava relacionado com a resolução de nomes das restantes máquinas. Foram implementadas algumas possíveis soluções, tais como, desativar a resolução de nomes do motor da base de dados e adicionar os endereços e os nomes ao ficheiro de resolução de nomes utilizado pelo sistema operativo, mas em nenhuma das soluções se verificou uma melhoria na situação em questão. De qualquer das formas esta questão não foi mais aprofundada pois a fase que dita a performance de um determinado teste (ciclo principal, ver \ref{func}) não é influenciada.

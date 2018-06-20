@@ -1,0 +1,84 @@
+De acordo com o anteriormente descrito na secção \ref{proposal}, para a geração e validação de identificadores
+ utilizam-se entre 80 e 121 bits resultantes das funções HMAC e CMAC e as suites
+ criptográficas do IPSecv3 (RFC4301 \cite{rfc4301})
+com IKEv2 (RFC5996 \cite{rfc5996}), bem como o RFC 6379\cite{rfc6379}.
+\\
+
+\noindent
+\textbf{Análise do custo computacional.}
+Os resultados a seguir apresentados são os que implicam o pior caso para o defensor (ou seja o receptor) e o melhor caso
+para o potencial atacante DDoS (ou seja o emissor), na combinação de suites criptográficas que menos agrava
+a assimetria entre o atacante e o defensor. Recorde-se que esta combinação é a seguinte:
+\begin{enumerate}
+\item Assinaturas RSA PKCS-1, com chave de 1024 bits e utilização de síntese SHA-256,
+\item HMAC-SHA256-128, com o identificador gerado a partir dos 121 bits mais significativos do valor de saída desta função
+(que calcula inicialmente 128 bits por uma operação XOR de duas partes (direita e esquerda) do output inicial de 256 bits).
+\item Nesta configuração o tamanho de um certificado $Cert_{orig}$ é de 350 bytes como explicado antes.
+\end{enumerate}
+
+Nas avaliações experimentais utilizou-se a biblioteca
+OpenSSL, v0.98za, numa plataforma Intel Core i7, 2,5GHz QuadCore,
+com sistema de operação OS X Mavericks.
+Nesta plataforma, as operações de exponenciação / multiplicação de inteiros em
+RSA e DSA já fazem uso de co-processamento híbrido de aceleração em software / hardware.
+
+\paragraph{\textbf{Custo de geração de um certificado por um potencial atacante}}
+O tempo médio observado correspondente a 12.000 gerações de certificados (sem contar com geração de pares chave pública e privada, já que estas podem ser pré-calculadas por parte de um potencial emissor atacante) foi de 0,47ms em média. A sua validação por parte do receptor implica um custo de 0,037ms, dada a assimetria a favor do defensor das operações de assinatura e verificação quando se usa RSA, PKCS\#1 e síntese SHA-256.
+Notar que o atacante só pode gerar o certificado após obter o identificador da vitima,
+%temporário destino (\mapenc),
+que apenas é válido por algumas horas.
+
+\paragraph{\textbf{Custo de geração do identificador $ID_{orig}$ com base na função HMAC}}
+Nas observações realizadas (que consistiram em gerar e verificar 12.000 identificadores, em 12 séries de 100
+identificadores em diferentes instantes nos computadores usados), o atacante
+consegue gerar em média um identificador em cada 13,98 $\mu $s, com o defensor a gastar
+praticamente o mesmo tempo - média de 13,81 $\mu $s para o validar.
+
+Nas séries de avaliações experimentais teve-se o cuidado de proceder à minimização de efeitos colaterais do processamento, minimizando os processos em execução no sistema alvo de medida (isto para além do número de amostras obtidas em séries de avaliações realizadas com intervalos variáveis ao longo de um dia), com obtenção de desvios padrão inferiores a 1\% sobre os valores médios medidos.
+\\
+
+\noindent
+\textbf{Análise de segurança.}
+De acordo com os resultados experimentais obtidos,
+apresenta-se de seguida uma avaliação sobre a efectividade da integridade dos identificadores (com resistência a eventuais
+colisões que o atacante pretenda explorar, dentro da janela de validade do identificador destino, que como se referiu é fixada em
+algumas horas).
+
+Para o efeito partimos da avaliação teórica da propriedade de defesa face a colisões fortes (\emph{second-image resistance})
+nas sínteses subjacentes à função HMAC. Isto porque vamos considerar (para pior caso do defensor) que este aceitaria o
+identificador origem sem um reconhecimento prévio da assinatura do certificado do emissor, o que constitui mais uma vez o melhor caso
+para o atacante e o pior para o defensor. Note-se que a função HMAC só pode  ser calculada pelo atacante depois de obter o identificador
+destino válido, pois este é usado na implementação como chave partilhada de entrada para o cálculo HMAC
+do identificador origem que será depois reconhecido pelo receptor a partir dos restantes dados do certificado do emissor.
+
+Uma vez que até ao momento não são conhecidas vulnerabilidades de criptoanálise, comprovadas ou publicadas, em relação
+à construção da função ``sponge'' e síntese primitiva Keccak (subjacentes à normalização SHA-3 \cite{sha3}),
+assumimos que o oponente só encontrará ``no melhor caso'' uma possível colisão, quando gerar no mínimo
+$2^{128}$ identificadores\footnote{Está-se a assumir o uso de HMAC parametrizável com SHA-256 (SHA-3),
+de acordo com o RFC 6379,
+a mesma construção usada na mais recente normalização IPSecv3, para a qual não foi
+encontrada até agora qualquer vulnerabilidade.}.
+Deve ter-se em conta que a colisão tem que ser encontrada sobre
+um certificado antes considerado válido pelo receptor e no tempo de vida do seu identificador (ou seja algumas horas).
+%Deve notar-se no entanto que nas suites criptográficas seleccionadas, este é mesmo o caso de protecção mais fraca
+%(comparativamente às outras opções de configuração também consideradas).
+
+Assim, admitindo que o atacante terá que conseguir realizar no mínimo $2^{128}$  ($\approx 3,4 \times 10^{38}$)
+operações de geração de identificadores, tendo por base um certificado que vai apresentar ao receptor e que foi por ele gerado previamente.
+Isso exigirá ao atacante dispor de $1,32\times10^{24}$ horas para o fazer com eventual sucesso. Se por hipótese, o atacante usar uma
+capacidade computacional equivalente a $10^{10}$ processadores como o usado no teste, ainda assim necessitaria de
+$1,32\times10^{14}$ horas (ou seja cerca de $1,5 \times 10^{10}$ anos). É claro que ainda podemos considerar
+que no esquema utilizado apenas se utilizam os 121 bits mais significativos do valor da computação HMAC
+e não os 256 bits úteis. De qualquer modo, a probabilidade de ocorrer uma colisão dos primeiros 121
+bits em 256 bits gerados pseudo-aleatoriamente é aproximadamente igual a $10^{-32}$. Este valor
+pode ser  calculado aproximadamente usando a fórmula
+$1-e^{-(N*N-1)/2^K}$, com N=256 bits e K=121 bits, cuja dedução completa pode
+ser encontrada em \cite{stallings_computer_2014}, apêndice 11.
+
+
+
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "main"
+%%% End:

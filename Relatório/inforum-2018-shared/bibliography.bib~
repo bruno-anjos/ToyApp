@@ -1,0 +1,524 @@
+@book{sha3,
+        title = {{DRAFT} {FIPS} {PUB} 202: {SHA}-3 standard: {Permutation}-based hash and extendable-output functions},
+        shorttitle = {{DRAFT} {FIPS} {PUB} 202},
+        publisher = {NIST},
+        author = {National Institute of Standards and Technology},
+        month = may,
+        year = {2014}
+}
+
+@book{stallings_computer_2014,
+	edition = {3rd},
+	title = {Computer {Security} {Principles} and {Practice}},
+	publisher = {Pearson},
+	author = {Stallings, W. and Brown, L.},
+	year = {2014},
+}
+
+@inproceedings{idas,
+	title = {Simulation for intrusion-resilient, {DDoS}-resistant authentication system ({IDAS})},
+	url = {http://dl.acm.org/citation.cfm?id=1400687},
+	urldate = {2015-06-15},
+	booktitle = {Proceedings of the 2008 {Spring} simulation multiconference},
+	publisher = {Society for Computer Simulation International},
+	author = {Wu, Chwan Hwa John and Liu, Tong},
+	year = {2008},
+	pages = {844--851},
+}
+
+@inproceedings{kuhrer_exit_2014,
+	title = {Exit from {Hell}? {Reducing} the {Impact} of {Amplification} {DDoS} {Attacks}},
+	shorttitle = {Exit from {Hell}?},
+	url = {https://www.usenix.org/system/files/conference/usenixsecurity14/sec14-paper-kuhrer.pdf},
+	urldate = {2014-12-29},
+	booktitle = {{USENIX} {Security} {Symposium}},
+	author = {K{\"u}hrer, Marc and Hupperich, Thomas and Rossow, Christian and Holz, Thorsten},
+	year = {2014},
+}
+
+@inproceedings{grizzard_peer--peer_2007,
+	title = {Peer-to-peer botnets: {Overview} and case study},
+	shorttitle = {Peer-to-peer botnets},
+	url = {https://www.usenix.org/event/hotbots07/tech/full_papers/grizzard/grizzard_html},
+	urldate = {2015-06-15},
+	booktitle = {Proceedings of the first conference on {First} {Workshop} on {Hot} {Topics} in {Understanding} {Botnets}},
+	author = {Grizzard, Julian B. and Sharma, Vikram and Nunnery, Chris and Kang, Brent ByungHoon and Dagon, David},
+	year = {2007},
+	pages = {1--1},
+	file = {[HTML] from usenix.org:/Users/meqif/Library/Application Support/Firefox/Profiles/jv0qtsr7.default-1380719372667/zotero/storage/SICG84C5/grizzard_html.html:text/html}
+}
+
+@inproceedings{cooke_zombie_2005,
+	title = {The zombie roundup: {Understanding}, detecting, and disrupting botnets},
+	volume = {39},
+	shorttitle = {The zombie roundup},
+	url = {https://www.usenix.org/legacyurl/usenix-sruti-05-technical-paper-10},
+	urldate = {2015-06-15},
+	booktitle = {Proceedings of the {USENIX} {SRUTI} {Workshop}},
+	author = {Cooke, Evan and Jahanian, Farnam and McPherson, Danny},
+	year = {2005},
+	pages = {44},
+}
+
+@techreport{verisign_2014,
+	title = {Verisign {Distributed} {Denial} of {Serice} {Trends} {Report} - {Q}2 2014},
+	number = {Issue 2},
+	institution = {Verisign},
+	author = {Verisign},
+	year = {2014}
+}
+
+@techreport{arbor_ddos_2015,
+        number = {Volume {X}},
+        title = {Worldwide {Infrastructure} {Security} {Report}},
+        institution = {Arbor Networks},
+        author = {Anstee, Darren and Escobar, Jorge and Chui, C.F. and Sockrider, Gary},
+        year = {2015},
+        note = {SR/WISR2014/EN/0115-LETTER}
+}
+
+@article{zargar_survey_2013,
+	title = {A survey of defense mechanisms against distributed denial of service ({DDoS}) flooding attacks},
+	volume = {15},
+	url = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6489876},
+	number = {4},
+	urldate = {2015-06-13},
+	journal = {Communications Surveys \& Tutorials, IEEE},
+	author = {Zargar, Saman Taghavi and Joshi, Jyoti and Tipper, David},
+	year = {2013},
+	pages = {2046--2069},
+}
+
+@misc{cisco-mobile,
+	title = {Cisco Visual Networking Index: Global Mobile Data Traffic Forecast Update, 2013–2018},
+	author = {Cisco},
+	 howpublished = "\url{http://www.cisco.com/en/US/solutions/collateral/ns341/ns525/ns537/ns705/ns827/white_paper_c11-520862.html}",
+	organization = {Cisco White Paper},
+	location = {San Jose, CA, USA},
+	year = {2013},
+	note = "[Online; accessed February 2014]",
+}
+
+@misc{akamai,
+	title = {State of the Internet Security Report \-- Q1 2015},
+	author = {Akamai Technologies},
+	organization = {Akamai Technologies},
+	location = {Cabridge, MA, USA},
+	year = {2015},
+	note = "[Online; accessed June 2015]",
+}
+
+@techreport{belson_q4_2014,
+	title = {Q4 2014 {State} of the {Internet} {Report}},
+	url = {https://content.akamai.com/PG1380-SOTI.html},
+	number = {Volume 7, Number 4},
+	institution = {Akamai},
+	author = {Thompson, John and McKeay, Martin and Brenner, Bill and Sun, Jennifer and M{\"o}ller, Richard and Sintorn, Mathias and Huston, Geoff},
+	editor = {Belson, David},
+	year = {2014}
+}
+
+@techreport{fossi_symantec_2011,
+	title = {Symantec {Internet} {Security} {Threat} {Report} {\textemdash} {Trends} for 2010},
+	url = {http://book.itep.ru/depository/security/symantec/Symantec%20-%20April%202011%20threat%20report.pdf},
+	number = {Volume 16},
+	urldate = {2015-05-07},
+	author = {Fossi, Marc and Egan, Gerry and Haley, Kevin and Johnson, Eric and Mack, Trevor and Adams, T{\'e}o and Blackbird, Joseph and Low, Mo King and Mazurek, Debbie and McKinney, David and Wood, Paul},
+	year = {2011},
+}
+
+@article{ddos,
+ author = {Peng, Tao and Leckie, Christopher and Ramamohanarao, Kotagiri},
+ title = {Survey of Network-based Defense Mechanisms Countering the DoS and DDoS Problems},
+ journal = {ACM Comput. Surv.},
+ issue_date = {2007},
+ volume = {39},
+ number = {1},
+ month = apr,
+ year = {2007},
+ issn = {0360-0300},
+ articleno = {3},
+ url = {http://doi.acm.org/10.1145/1216370.1216373},
+ doi = {10.1145/1216370.1216373},
+ acmid = {1216373},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {Botnet, DDoS, DNS reflector attack, DoS, IP spoofing, IP traceback, IRC, Internet security, SYN flood, VoIP security, bandwidth attack, resource management},
+}
+
+@inproceedings{clark88,
+ author = {Clark, D.},
+ title = {The design philosophy of the DARPA internet protocols},
+ booktitle = {SIGCOMM '88: Symposium proceedings on Communications architectures and protocols},
+ year = {1988},
+ isbn = {0-89791-279-9},
+ pages = {106--114},
+ location = {Stanford, California, United States},
+ doi = {http://doi.acm.org/10.1145/52324.52336},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+}
+
+
+@inproceedings{ghodsi2011naming,
+  title={Naming in content-oriented architectures},
+  author={Ghodsi, Ali and Koponen, Teemu and Rajahalme, Jarno and Sarolahti, Pasi and Shenker, Scott},
+  booktitle={Proceedings of the ACM SIGCOMM workshop on Information-centric networking},
+  pages={1--6},
+  year={2011},
+  organization={ACM},
+}
+
+@article{pan2011survey,
+  title={A survey of the research on future internet architectures},
+  author={Pan, Jianli and Paul, Subharthi and Jain, Raj},
+  journal={Communications Magazine, IEEE},
+  volume={49},
+  number={7},
+  pages={26--36},
+  year={2011},
+  publisher={IEEE}
+}
+
+
+@inproceedings{rowstron2001pastry,
+  title={Pastry: Scalable, decentralized object location, and routing for large-scale peer-to-peer systems},
+  author={Rowstron, Antony and Druschel, Peter},
+  booktitle={Middleware 2001},
+  pages={329--350},
+  year={2001},
+  organization={Springer}
+}
+@inproceedings{gupta2003one,
+  title={One Hop Lookups for Peer-to-Peer Overlays.},
+  author={Gupta, Anjali and Liskov, Barbara and Rodrigues, Rodrigo and others},
+  booktitle={HotOS},
+  pages={7--12},
+  year={2003}
+}
+
+
+@article{francois2005achieving,
+  title={Achieving sub-second IGP convergence in large IP networks},
+  author={Francois, Pierre and Filsfils, Clarence and Evans, John and Bonaventure, Olivier},
+  journal={ACM SIGCOMM Computer Communication Review},
+  volume={35},
+  number={3},
+  pages={35--44},
+  year={2005},
+  publisher={ACM}
+}
+
+@misc{potaroo,
+	title = {The on-line BGP (and CIDR) Report},
+	author = {University of Oregon, USA, Route Views Project},
+	howpublished = "url = {http://bgp.potaroo.net}",
+	location = {USA},
+	year = {2014},
+	note = "[Online; accessed February 2014]",
+}
+
+
+
+@article{sep-edge-core,
+author={Dan Jen and  Michael Meisel and  He Yan and  Dan Massey and  Lan Wang and  Beichuan Zhang and  Lixia Zhang},
+title={Towards a New Internet Routing Architecture: Arguments for Separating Edges from Transit Core},
+journal={HotNets-VII},
+year={2008},
+month={October},
+comment={}}
+
+
+@article{DBLP:journals/jnw/TangLWZ13,
+  author    = {Jianqiang Tang and
+               Ying Liu and
+               Ming Wan and
+               Hongke Zhang},
+  title     = {Blocking DoS Attack Traffic in Network with Locator/Identifier
+               Separation},
+  journal   = {JNW},
+  volume    = {8},
+  number    = {3},
+  year      = {2013},
+  pages     = {731-738},
+  ee        = {http://dx.doi.org/10.4304/jnw.8.3.731-738},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@article{ddos-ssm,
+  author    = {Hongbin Luo and
+               Yi Lin and
+               Hongke Zhang and
+               Moshe Zukerman},
+  title     = {Preventing DDoS attacks by identifier/locator separation},
+  journal   = {IEEE Network},
+  volume    = {27},
+  number    = {6},
+  year      = {2013},
+  pages     = {60-65},
+  ee        = {http://dx.doi.org/10.1109/MNET.2013.6678928},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+
+@article{ssm,
+  author    = {Hongbin Luo and
+               Hongke Zhang and
+               Moshe Zukerman},
+  title     = {Decoupling the design of identifier-to-locator mapping services
+               from identifiers},
+  journal   = {Computer Networks},
+  volume    = {55},
+  number    = {4},
+  year      = {2011},
+  pages     = {959-974},
+  ee        = {http://dx.doi.org/10.1016/j.comnet.2010.12.009},
+  bibsource = {DBLP, http://dblp.uni-trier.de}
+}
+
+@inproceedings{dmap,
+  title={Dmap: A shared hosting scheme for dynamic identifier to locator mappings in the global internet},
+  author={Vu, Tam and Baid, Akash and Zhang, Yanyong and Nguyen, Thu D and Fukuyama, Junichiro and Martin, Richard P and Raychaudhuri, Dipankar},
+  booktitle={Distributed Computing Systems (ICDCS), 2012 IEEE 32nd International Conference on},
+  pages={698--707},
+  year={2012},
+  organization={IEEE}
+}
+
+
+@article{Saltzer:1984:EAS:357401.357402,
+ author = {Saltzer, J. H. and Reed, D. P. and Clark, D. D.},
+ title = {End-to-end arguments in system design},
+ journal = {ACM Trans. Comput. Syst.},
+ volume = {2},
+ issue = {4},
+ month = {November},
+ year = {1984},
+ issn = {0734-2071},
+ pages = {277--288},
+ numpages = {12},
+ url = {http://doi.acm.org/10.1145/357401.357402},
+ doi = {http://doi.acm.org/10.1145/357401.357402},
+ acmid = {357402},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {data communication, design principles, protocol design},
+}
+
+@article{overlays-underlays,
+ author = {Dai, Jie and Liu, Fangming and Li, Bo},
+ title = {The disparity between P2P overlays and ISP underlays: issues, existing solutions, and challenges},
+ journal = {Netwrk. Mag. of Global Internetwkg.},
+ issue_date = {November/December 2010},
+ volume = {24},
+ issue = {6},
+ month = {November},
+ year = {2010},
+ issn = {0890-8044},
+ pages = {36--41},
+ numpages = {6},
+ url = {http://dl.acm.org/citation.cfm?id=1922551.1922559},
+ acmid = {1922559},
+ publisher = {IEEE Press},
+ address = {Piscataway, NJ, USA},
+}
+
+@INPROCEEDINGS{rotam,
+ author={Peng Jiang and Sasaki, C. and Tagami, A. and Ano, S.},
+ booktitle={World Telecommunications Congress (WTC), 2012},
+ title={Route-Optimized NAT Traversal Approach for LISP Mobile Node},
+ year={2012},
+ month={March},
+ pages={1-6},
+ keywords={Internet;mobile computing;mobility management (mobile radio);protocols;EID;IETF;IP address functionality;Internet;LISP data path;LISP mobile node;LISP-MN;NAT Traversal Router;NAT device;NTR;ROTAM;centralized performance bottleneck;endpoint identifiers;locator-ID separation protocol;map resolvers;map server;map-register message;mobile node roaming;mobility support approach;must-go-through point;network address translation;private RLOC address;route-optimized NAT traversal approach;routing locators;Delay;IP networks;Internet;Manganese;Mobile communication;Routing;Servers},
+}
+
+@inproceedings{Yang:2005:DNA:1080091.1080120,
+ author = {Yang, Xiaowei and Wetherall, David and Anderson, Thomas},
+ title = {A DoS-limiting Network Architecture},
+ booktitle = {Proceedings of the 2005 Conference on Applications, Technologies, Architectures, and Protocols for Computer Communications},
+ series = {SIGCOMM '05},
+ year = {2005},
+ isbn = {1-59593-009-4},
+ location = {Philadelphia, Pennsylvania, USA},
+ pages = {241--252},
+ numpages = {12},
+ url = {http://doi.acm.org/10.1145/1080091.1080120},
+ doi = {10.1145/1080091.1080120},
+ acmid = {1080120},
+ publisher = {ACM},
+ address = {New York, NY, USA},
+ keywords = {denial-of-service, internet},
+}
+
+@phdthesis {thesys-lisp,
+	title = {Mechanisms for Interdomain Traffic Engineering with LISP},
+	author = {Damien Saucez},
+	school = {Université catholique de Louvain},
+	year = {2011},
+	month = {October},
+}
+
+@misc{LISP-MN,
+  author={Farinacci, D. and Lewis, D. and Meyer, D. and White, C.},
+  title="{LISP Mobile Node}",
+  series="Draft",
+  howpublished="draft-meyer-lisp-mn-10, IETF",
+  publisher="IETF",
+  organization="Internet Engineering Task Force",
+  year=2014,
+  month=jan,
+  url="http://tools.ietf.org/html/draft-meyer-lisp-mn-10",
+}
+
+@ARTICLE{mapping-survey,
+ author={Hoefling, M. and Menth, M. and Hartmann, M.},
+ journal={Communications Surveys Tutorials, IEEE},
+ title={A Survey of Mapping Systems for Locator/Identifier Split Internet Routing},
+ year={2013},
+ month={Fourth Quarter},
+ volume={15},
+ number={4},
+ pages={1842-1858},
+ keywords={IP networks;Internet;telecommunication network routing;IP address;data packets;globally routable locators;intermediate node;locator/identifier split Internet routing;mapping systems;network attachment points;routing architectures;scalable future Internet;sending host;IP networks;Internet;Logic gates;Mapping systems;Protocols;Relays;Scability;Locator/identifier split;mapping system;scalable Internet routing},
+ doi={10.1109/SURV.2013.011413.00039},
+ ISSN={1553-877X},
+}
+
+@misc{ddt,
+  author={Fuller, V. and Lewis, D. and Ermagan, V. and Jain, A.},
+  title="{LISP Delegated Database Tree}",
+  series="Draft",
+  howpublished="draft-ietf-lisp-ddt-01, IETF",
+  publisher="IETF",
+  organization="Internet Engineering Task Force",
+  year=2013,
+  month=mar,
+  url="http://tools.ietf.org/html/draft-ietf-lisp-ddt-01",
+}
+
+@misc{threats,
+  author={Saucez, D. and Iannone, L. and Bonaventure, O.},
+  title="{LISP Threats Analysis}",
+  series="Draft",
+  howpublished="draft-ietf-lisp-threats-08, IETF",
+  publisher="IETF",
+  organization="Internet Engineering Task Force",
+  year=2013,
+  month=oct,
+  url="http://tools.ietf.org/html/draft-ietf-lisp-threats-08"
+}
+
+
+@misc{nattra,
+  author={Ermagan, V. and Farinacci, D. and Lewis, D. and Skriver, J. and Maino, F. and White, C.},
+  title="{NAT traversal for LISP}",
+  series="Draft",
+  howpublished="draft-ermagan-lisp-nat-traversal-04, IETF",
+  publisher="IETF",
+  organization="Internet Engineering Task Force",
+  year=2013,
+  month=oct,
+  url="http://tools.ietf.org/html/draft-ermagan-lisp-nat-traversal-04",
+}
+
+@misc{prespective-draft,
+  author="J. N. Chiappa",
+  title="{An Architectural Perspective on the LISP Location-Identity Separation System}",
+  series="Draft",
+  howpublished="draft-ietf-lisp-perspective-00, IETF",
+  publisher="IETF",
+  organization="Internet Engineering Task Force",
+  year=2013,
+  month=April,
+  url="http://tools.ietf.org/html/draft-ietf-lisp-perspective-00",
+}
+
+@misc{cisco-live,
+	title = {LISP: A Next Generation Network Architecture},
+	author = {Darrel Lewis and Gregg Schudel},
+	howpublished = "url = {http://d2zmdbbm9feqrf.cloudfront.net/2011/las/pdf/BRKRST-3045.pdf}",
+	organization = {Cisco Live},
+	location = {Las Vegas, USA},
+	year = {2011},
+	month = {July},
+	year = {2014},
+	note = "[Online; Presentation slides accessed February 2014]",
+}
+
+@misc{natnote,
+	title = {Cisco IOS LISP Application Note Series: Network Address Translation},
+	url = {http://www.cisco.com/en/US/docs/ios/lisp/app/note/LISP_nat_app_note.pdf},
+	organization = {Cisco Systems},
+	location = {USA},
+	year = {2011},
+	note = {As of January 2014},
+}
+
+@article{nikander_host_2010,
+	title = {Host identity protocol ({HIP}): {Connectivity}, mobility, multi-homing, security, and privacy over {IPv}4 and {IPv}6 networks},
+	volume = {12},
+	shorttitle = {Host identity protocol ({HIP})},
+	url = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=5451761},
+	number = {2},
+	urldate = {2015-01-11},
+	journal = {Communications Surveys \& Tutorials, IEEE},
+	author = {Nikander, Pekka and Gurtov, Andrei and Henderson, Thomas R.},
+	year = {2010},
+	pages = {186--204},
+}
+
+@article{luo_decoupling_2011,
+	title = {Decoupling the design of identifier-to-locator mapping services from identifiers},
+	volume = {55},
+	url = {http://www.sciencedirect.com/science/article/pii/S1389128610003762},
+	number = {4},
+	urldate = {2015-01-22},
+	journal = {Computer Networks},
+	author = {Luo, Hongbin and Zhang, Hongke and Zukerman, Moshe},
+	year = {2011},
+	pages = {959--974},
+}
+
+@article{luo_preventing_2013,
+	title = {Preventing {DDoS} attacks by identifier/locator separation},
+	volume = {27},
+	issn = {0890-8044},
+	url = {http://ieeexplore.ieee.org/xpls/abs_all.jsp?arnumber=6678928},
+	doi = {10.1109/MNET.2013.6678928},
+	number = {6},
+	urldate = {2015-01-11},
+	journal = {IEEE Network},
+	author = {Luo, Hongbin and Lin, Yi and Zhang, Hongke and Zukerman, Moshe},
+	month = nov,
+	year = {2013},
+	pages = {60--65},
+}
+
+@article{saucez_designing_2012,
+	title = {Designing a {Deployable} {Future} {Internet}: the {Locator}/{Identifier} {Separation} {Protocol} ({LISP}) case},
+	volume = {16},
+	issn = {1089-7801},
+	shorttitle = {Designing a {Deployable} {Internet}},
+	url = {http://inl.info.ucl.ac.be/publications/designing-deployable-future-internet-locatoridentifier-separation-protocol-lisp-case},
+	doi = {10.1109/MIC.2012.98},
+	number = {6},
+	urldate = {2015-01-11},
+	journal = {IEEE Internet Computing},
+	author = {Saucez, Damien and Iannone, Luigi and Bonaventure, Olivier and Farinacci, Dino},
+	month = nov,
+	year = {2012},
+	pages = {14--21},
+}
+
+@inproceedings{arkko_weak_2004,
+	title = {Weak authentication: {How} to authenticate unknown principals without trusted parties},
+	shorttitle = {Weak authentication},
+	url = {http://scholar.google.pt/scholar_url?url=http%3A%2F%2Flink.springer.com%2Fcontent%2Fpdf%2F10.1007%2F978-3-540-39871-4_3.pdf&hl=en&sa=T&ct=res&cd=0&ei=52jNVPOvH8TS0wGSkoCoCg&scisig=AAGBfm2xwqHAhoXnukJr9-bg7oMdqpEjaA&nossl=1&ws=1440x494},
+	urldate = {2015-01-31},
+	booktitle = {Security {Protocols}},
+	publisher = {Springer},
+	author = {Arkko, Jari and Nikander, Pekka},
+	year = {2004},
+	pages = {5--19}
+}

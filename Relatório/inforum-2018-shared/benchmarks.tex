@@ -1,0 +1,58 @@
+
+
+
+\section{Benchmarks e metodologia de testes} \label{benchs}
+
+{ \color{blue} Apresentar o que se pretendia avaliar, porque se fez um novo benchmark
+
+Descrever o mesmo benchmark
+
+Descrever sumariamente as variáveis e as medidas que se procuraram obter}
+
+
+Pretende-se avaliar a capacidade de emulação de um sistema distribuído de larga escala que efetua uma grande quantidade de trocas de mensagens periodicamente.
+Para tal foi criado um \textit{benchmark} baseado na análise do tempo de execução do ciclo principal da aplicação. Fazendo variar o débito e o número de elementos do sistema 
+distribuído é possível analisar a capacidade de ambas as tecnologias de emular de uma rede virtual e também observar quais os limites desta. 
+
+Foi desenvolvida uma aplicação em python cujo objetivo consiste na inserção periódica de tuplos numa base de dados mysql local e periodicamente enviar os mesmos agroupadamente para serem inseridos em bases de dados remotas, replicando assim a base de dados. 
+
+\discutir{\textbf{ADICIONEI ESTA PARTE QUE DIZ O PORQUE DE NAO UTILIZARMOS UM BENCHMARK PRE-FEITO}}
+
+Este formato de testes foi construído de raíz, pois o que foi verificado no trabalho relacionado (ver \ref{relac}), é que por norma os testes de \textit{performance} entre máquinas virtuais e containers são a um nível local e não implicam qualquer tipo de comunicação. Visando este projecto a comparação de \textit{performances} de diferentes ambientes a um nível distribuído, foi então desenhada uma aplicação que representasse um sistema desse mesmo tipo.
+
+
+\subsection{Funcionamento da aplicação} \label{func}
+
+\begin{itemize}
+
+\item Seja D o débito da aplicação, a razão entre a quantidade de tuplos inseridos e uma unidade temporal. D = $\frac{msg}{minuto}$
+\item Seja AG o fator de agregação das mensagens enviadas para as bases de dados remotas
+\item Seja N o número de instâncias que compõe o sistema distribuído
+
+\end{itemize}
+
+
+O fluxo da aplicação consiste em três estados principais:
+
+\begin{enumerate}
+\item Sincronização
+\begin{description}
+\item A fase de sincronização possui como objetivo a coordenação das múltiplas instâncias da aplicação. Esta consiste no estabelecimento de ligações entre os diversos componentes do sistema. Após estabelecidas as ligações, é inserida uma entrada numa tabela de sincronização pertencente á base de dados elemento cujo endereço IP é o menor (\textit{master node}). Posteriormente são efetuadas listagens dessa tabela periodicamente, no momento em que o número de entradas for igual ao número de elementos do sistema distribuído é concluído que todos os elementos do sistema estão prontos para prosseguir para a seguinte fase de execução.
+\end{description}
+
+\item Ciclo principal
+\begin{description}
+\item No ciclo principal periodicamente (de acordo com D), será gerado um número aleatório de 0-100 e gerada uma sequência aleatória de carateres. Um tuplo composto pelos elementos referidos anteriormente será inserido na tabela da base de dados local. Após AG inserções locais serem executadas, são inserido os mesmos tuplos agregados nas restantes N - 1 bases de dados. Cada instância da aplicação irá executar estas inserções, resultando na tabela referida anteriormente replicada em N bases de dados.
+\end{description}
+
+\item Dessincronização
+\begin{description}
+\item Na fase de dessincronização todos os elementos do sistema distribuído irão remover o tuplo inserido durante a fase de sincronização (presente na tabela do \textit{master node}), em seguida irá efetuar a listagem dessa tabela até que esta esteja vazia. Nesse momento é concluída a fase de dessincronização.
+\end{description}
+
+\end{enumerate}
+
+
+
+
+

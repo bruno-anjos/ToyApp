@@ -1,0 +1,146 @@
+\documentclass[a4paper]{llncs}
+%
+
+% Additional packages used
+\usepackage[utf8]{inputenc}
+\usepackage[portuges]{babel}
+\usepackage{hyphenat}
+\usepackage{amsmath}
+\usepackage[pdftex]{graphicx}
+\usepackage{tabularx}
+\usepackage{comment}
+\usepackage{calc}
+\usepackage{pslatex}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{footnote}
+\captionsetup{compatibility=false}
+
+% Packages needed for the table with alternating colors
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{booktabs}
+\usepackage{tabu}
+
+% Enumeration item customization
+% \usepackage{enumitem}
+
+% Inline lists
+\usepackage{paralist}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newcommand{\alternativa}[1]{}
+\newcommand{\ie}{\textit{i.e.},\ }
+\newcommand{\eg}{\textit{e.g.},\ }
+\newcommand{\etal}{\textit{et al.}\ }
+\newcommand{\cf}{\textit{c.f.}\ }
+\newcommand{\mapenc}{\textit{Map/Encap}}
+\newcommand{\map}{sistema de \textit{mapping}}
+\newcommand{\discutir}{\textbf{[por discutir] \ \ \ \ $\rightarrow$\ \ \ \ }}
+\newcommand{\loc}{lo\-ca\-li\-za\-ção}
+
+
+
+\newcommand{\lincont}{\textit{linux container }}
+\newcommand{\cont}{\textit{container}}
+\newcommand{\conts}{\textit{containers}}
+\newcommand{\Cont}{\textit{Container}}
+\newcommand{\Conts}{\textit{Containers}}
+\newcommand{\cloud}{\textit{cloud}}
+\newcommand{\clouds}{\textit{clouds}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Adjust distance between floats (figures and tables) and text
+% \setlength{\belowcaptionskip}{-10pt}
+% \setlength{\abovecaptionskip}{-10pt}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+\title{{\Conts} versus Máquinas Virtuais para Emulação de Controlo de Redes}
+\author{Bruno Anjos, Nuno Morais, Paulo Lopes e Jos\'{e} Legatheaux Martins}
+%%%% list of authors for the TOC (use if author list has to be modified)
+\tocauthor{}
+
+\institute{NOVA LINCS, Departamento de Informática\\
+           Faculdade de Ciências e Tecnologia, Universidade Nova de Lisboa\\
+           2829--516 Caparica, Portugal\\
+%
+           \email{ \{b.anjos@campus., nm.morais@campus, paulo.lopes, jose.legatheaux\}@fct.unl.pt} \\
+           \url{http://di.fct.unl.pt}
+           }
+
+
+%\keywords{}
+
+\maketitle              % typeset the title of the contribution
+
+
+\begin{abstract}
+Dada a complexidade e as dificuldades associadas ao teste de
+protocolos distribuídos para controlo de equipamentos de rede num
+contexto real, é comum recorrer a emulação para teste dos mesmos. Os
+primeiros emuladores recorriam a máquinas reais, interligadas através
+de um sistema de emulação do tempo de trânsito e da perda de pacotes
+numa rede real [ModelNet].
+
+Com o desenvolvimento das tecnologias de virtualização, seja esta através de
+máquinas virtuais ou de \conts, tornou-se atractivo substituir as
+máquinas reais e os equipamentos de comutação por sistemas
+virtualizados. Um dos sistemas mais populares que seguem esta
+abordagem é o sistema MiniNet [ MiniNet ], para emulação de redes
+controladas com a abordagem Software Defined Networking e o protocolo
+OpenFlow. Outros sistemas, que utilizam outros protocolos e outros
+tipos de equipamentos de comutação, utilizam para o mesmo efeito
+máquinas virtuais [ Cisco ].
+
+No quadro de um projecto em que se pretende testar protocolos de
+controlo de equipamentos de rede mais complexos que os switches
+OpenFlow, e utilizando protocolos distribuídos com semântica de falhas
+bem definidas, da classe dos usados em bases de dados distribuídas,
+coloca-se o problema de decidir qual a tecnologia de virtualização a
+utilizar: máquinas virtuais (VMs) ou {\conts} implementados pelo sistema
+Docker.
+
+Este artigo apresenta um estudo empírico comparativo das tecnologias:
+máquinas virtuais implementadas sobre o hipervisor 
+ESXi da VMWare e containers Docker suportados quer no interior de VMs, quer em modo nativo.
+A execução de containers no interior de VMs, parecendo um contrasenso, 
+não o é de facto pois a maioria das plataformas de grande escala (e.g., \clouds)
+hoje acessíveis não disponibiliza acesso nativo aos utilizadores.
+
+
+\end{abstract}
+
+\label{introducao}
+\input{introducao}
+
+\label{virtualizacao}
+\input{virtualizacao}
+
+\label{benchmarks}
+\input{benchmarks}
+
+\label{testes}
+\input{testes}
+
+\label{relacionado}
+\input{relacionado}
+
+\label{fim}
+\input{fim}
+
+%\tiny
+
+\bibliographystyle{abbrv}
+
+\bibliography{bibliography}
+
+
+\end{document}
