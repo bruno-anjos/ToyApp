@@ -20,8 +20,6 @@ for line in `cat ${tests_folder}/* | grep Average`; do
     ((counter++))
 done
 
-echo "Averages are the same"
-
 #ROW COUNT LOOP
 counter=0
 first="teste"
@@ -36,8 +34,6 @@ for line in `cat ${tests_folder}/* | grep Row`; do
 
     ((counter++))
 done
-
-echo "Row counts are the same"
 
 #CREATE CSV
 echo "Creating CSV..."

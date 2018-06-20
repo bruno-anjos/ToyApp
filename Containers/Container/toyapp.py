@@ -28,7 +28,7 @@ CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
 
 DEBUG_MODE = False
-BASELINE_MODE = True
+BASELINE_MODE = False
 
 def main(argv):
     print("Starting toyapp")
@@ -51,7 +51,7 @@ def main(argv):
 
     elif len(argv) == 5:
         DEBUG_MODE = False
-        BASELINE_MODE = True
+        BASELINE_MODE = False
         
 
 #    elif len(argv) > 5:
