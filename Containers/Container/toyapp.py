@@ -161,9 +161,11 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
+        insertIntoDB(db.cursor(), [(key, value)])
+
 
         if BASELINE_MODE:
-            for i in range(0, numClients):
+            for i in range(1, numClients):
                 insertIntoDB(db.cursor(), [(key, value+i)])
 
         if not BASELINE_MODE:
