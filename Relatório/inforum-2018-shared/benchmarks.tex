@@ -3,23 +3,23 @@
 
 \section{Benchmarks e metodologia de testes} \label{benchs}
 
-{ \color{blue} Apresentar o que se pretendia avaliar, porque se fez um novo benchmark
-
-Descrever o mesmo benchmark
-
-Descrever sumariamente as variáveis e as medidas que se procuraram obter}
+O controlo de redes ao nível do chamado \emph{Control Plane} baseia-se, por razões relacionadas com a necessidade de um elevado desempenho e de simplicidade, em protocolos de coordenação entre as diferentes componentes de rede (e.g. \emph{switches, routers, controladores \dots}) com níveis de consistência do tipo ``consistência eventual''. Por essa razão, o estado propagado ou computado pelas diferentes componentes da rede transita entre estados consistentes através de períodos de inconsistência \cite{  } mais ou menos prolongados.
 
 
-Pretende-se avaliar a capacidade de emulação de um sistema distribuído de larga escala que efetua uma grande quantidade de trocas de mensagens periodicamente.
+
+
+
+
 Para tal foi criado um \textit{benchmark} baseado na análise do tempo de execução do ciclo principal da aplicação. Fazendo variar o débito e o número de elementos do sistema 
-distribuído é possível analisar a capacidade de ambas as tecnologias de emular de uma rede virtual e também observar quais os limites desta. 
+distribuído é possível analisar a capacidade de ambas as tecnologias de emular de uma rede virtual e também observar quais os limites desta.
 
 Foi desenvolvida uma aplicação em python cujo objetivo consiste na inserção periódica de tuplos numa base de dados mysql local e periodicamente enviar os mesmos agroupadamente para serem inseridos em bases de dados remotas, replicando assim a base de dados. 
 
-\discutir{\textbf{ADICIONEI ESTA PARTE QUE DIZ O PORQUE DE NAO UTILIZARMOS UM BENCHMARK PRE-FEITO}}
-
 Este formato de testes foi construído de raíz, pois o que foi verificado no trabalho relacionado (ver \ref{relac}), é que por norma os testes de \textit{performance} entre máquinas virtuais e containers são a um nível local e não implicam qualquer tipo de comunicação. Visando este projecto a comparação de \textit{performances} de diferentes ambientes a um nível distribuído, foi então desenhada uma aplicação que representasse um sistema desse mesmo tipo.
 
+O sistema onde foram efetuados os \textit{benchmarks} em questão, tinha dois processadores \textit{Intel Xeon E5-2670 v3} a 2.30GHz com 12 núcleos físicos (24 lógicos) cada, 128GB de RAM DDR4 2400MHz e corria o Hipervisor VMWare ESXi 6.5 diretamente sobre o hardware.
+
+Para os testes do ambiente de containers Docker, foi criada uma máquina virtual que permitisse os testes correrem num aspeto semelhante a um sistema cloud, onde os sistemas de containers correm sobre uma máquina virtual por questões de segurança. Para máquina em questão, dos recursos previamente mencionados foram disponibilizados os 12 núcleos físicos de ambos os processadores e 96GB de RAM. Não foi selecionada toda a RAM disponível pois escolheu-se deixar alguma disponível para o hipervisor. O sistema operativo de eleição para a máquina virtual dos testes foi o CentOS 7.
 
 \subsection{Funcionamento da aplicação} \label{func}
 
