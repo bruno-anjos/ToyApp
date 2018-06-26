@@ -1,86 +1,76 @@
 
-\section{Resultados dos testes e sua discussão}
+\section{Testes}
+
+Foram realizados diversos testes que estudam o impacto da variação do débito e do número de nós do sistema no tempo de
+execução. Um conjunto de testes foi efetuado num modo que designamos por \textit{baseline}. 
+Este consiste em eliminar toda a comunicação entre nós do sistema, visando analisar o \textit{overhead}
+introduzido pela troca de mensagens (e consequentemente, da emulação da rede virtual). No entanto, a
+actividade de geração e inserção de tuplos na base de dados é preservada, realizando-se um
+número total equivalente de gerações e inserções de tuplos.
 
 
-Dada a complexidade e as dificuldades associadas ao teste de
-protocolos distribuídos para controlo de equipamentos de rede num
-contexto real, é comum recorrer a emulação para teste dos mesmos. Os
-primeiros emuladores recorriam a máquinas reais, interligadas através
-de um sistema de emulação do tempo de trânsito e da perda de pacotes
-numa rede real [ModelNet].
+Em todos os testes foi fixado o fator de agregação ($AG = 100$), referido em \ref{benchs}, uma vez que se concluiu
+que este parâmetro apenas é relevante para valores baixos (de 1 a 5).
 
-Tal como discutido em \ref{introducao}
+Todos os testes foram executados em ambos os ambientes ({\conts} e VMs). Os parâmetros de teste são os seguintes:
+\begin{itemize}
 
-Foram então realizados múltiplos testes que estudavam a variação das variáveis descritas em \ref{benchs}, nomeadamente a variação do débito e a variação do número de instâncias. Foi também ainda realizado um teste de \textit{baseline}, com o objectivo de verificar o peso introduzido pelas comunicações do \textit{mysql} na rede. Serão então apresentados frente a frente os resultados no ambiente de containers \textit{versus} o ambiente de máquinas virtuais.
+\item Variação de débito com 15 nós e todas as inserções locais (\textbf{teste 1}: {\conts}, $D$ variável, $N = 15$ e modo \textit{baseline})
+\item Variação do número de nós com cada nó a gerar 5000 tuplos por minuto que insere $N$ vezes localmente (\textbf{teste 2}: {\conts}, $D$ = 5000, $N$ variável, e modo \textit{baseline})
 
+\item Variação de débito (\textbf{teste 3}: {\conts}, $D$ variável, $N = 15$)
+\item Variação do número (\textbf{teste 4}: {\conts}, $D$ = 5000, $N$ variável)
 
-\begin{center}
+\end{itemize}
 
-	\begin{figure}[H]
-		\includegraphics[scale=0.4]{figures/Containers/docker-ins.png}
-		\caption{Containers - Variação de inserções por minuto}
-		\label{fig:docker-ins}
-	\end{figure}
+O comportamento esperado do sistema varia de acordo com o número de operações que este executa por unidade de tempo. Este número é,
+no essencial, proporcional ao número de inserções na base de dados.
+A equação que define o número total de inserções por unidade de tempo é a seguinte:
 
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/VMs/vms-ins.png}
-			\caption{Máquinas Virtuais - Variação de inserções por minuto}
-			\label{fig:vms-ins}
-		\end{figure}
+\begin{equation}
+\label{eq:operacoes}
+ I = N^2 * D
+\end{equation}
 
+% Sendo que N corresponde ao número de nós do \textit{benchmark} e D ao débito de geração de tuplos por nó.
 
+\subsection{Resultados}
 
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/Containers/docker-nos.png}
-			\caption{Containers - Variação de instâncias}
-			\label{fig:docker-nos}
-		\end{figure}
+Nesta secção serão apresentados os resultados obtidos pelos testes apresentados acima. 
+Cada gráfico relaciona o parâmetro que varia com o desvio (em percentagem) do tempo de execução esperado,
+\ie o tempo definido pelo débito $D$ admitindo que as operações são realizadas sem atrasos.
 
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/VMs/vms-nos.png}
-			\caption{Máquinas Virtuais - Variação de instâncias}
-			\label{fig:vms-nos}
-		\end{figure}
+	
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/graphs/baseline_insertions}
+	\caption{\textbf{Teste 1} ({\conts} e VMs, $D$ variável, $N = 15$ e modo \textit{baseline})}
+	\label{fig:results-ins-baseline}
+\end{figure}
 
-		\discutir{faltam imagens e comentar}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/graphs/baseline_numNodes}
+	\caption{\textbf{Teste 2} ({\conts} e VMs, $D = 5000$, $N$ variável, e modo \textit{baseline})}
+	\label{fig:results-nos-baseline}
+\end{figure}
 
-		\begin{comment}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/graphs/insertions}
+	\caption{\textbf{Teste 3} ({\conts} e VMs, $D$ variável, $N = 15$)}
+	\label{fig:results-insertions}
+\end{figure}
 
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/Containers/docker-ins-base.png}
-			\caption{Containers - Variação de inserções por minuto em modo \textit{baseline}}
-			\label{fig:docker-ins-base}
-		\end{figure}
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.9\linewidth]{figures/graphs/numNodes}
+	\caption{\textbf{Teste 4} ({\conts} e VMs, $D = 5000$, $N$ variável)}
+	\label{fig:results-nos}
+\end{figure}
 
-		\end{comment}
-
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/VMs/vms-ins-base.png}
-			\caption{Máquinas Virtuais - Variação de inserções por minuto em modo \textit{baseline}}
-			\label{fig:vms-ins-base}
-		\end{figure}
-
-
-		\discutir{faltam imagens e comentar}
-
-		\begin{comment}
-
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/Containers/docker-nos-base.png}
-			\caption{Containers - Variação de inserções por minuto em modo \textit{baseline}}
-			\label{fig:docker-ins-base}
-		\end{figure}
-		
-		\end{comment}
-
-		\begin{figure}[H]
-			\includegraphics[scale=0.4]{figures/VMs/vms-nos-base.png}
-			\caption{Máquinas Virtuais - Variação de inserções por minuto em modo \textit{baseline}}
-			\label{fig:vms-ins-base}
-		\end{figure}
-
-		\discutir{faltam imagens e comentar}
+%Nas figuras \ref{fig:docker-ins} e \ref{fig:vms-ins} encontra-se representado o comportamento de ambos os ambientes de emulação fazendo variar as inserções por minuto. Pode-se então verificar que fixando o número de nós, os testes exibem um incremento linear, tal como esperado de acordo com a equação anteriormente apresentada. A diferença entre as duas soluções é insignificante.
 
 
-\end{center}
+%As figuras \ref{fig:docker-nos} e \ref{fig:vms-nos} apresentam os resultados dos testes em que se estuda o impacto da variação do número de instâncias. Verifica-se que no caso dos {\conts} o \textit{runtime} varia de acordo com o aumento de operações.
 

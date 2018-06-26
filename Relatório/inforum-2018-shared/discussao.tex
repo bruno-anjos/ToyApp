@@ -1,0 +1,18 @@
+
+\section{Discussão de resultados}
+\subsection{\emph{Baseline}}
+
+Na Figura \ref{fig:results-ins-baseline} encontra-se representado o comportamento de ambos os ambientes de emulação fazendo variar as gerações e inserções por minuto sem comunicação. Pode-se verificar que fixando o número de nós, os testes exibem um incremento linear, tal como esperado de acordo com a equação anteriormente apresentada. A diferença entre as duas soluções manifesta-se quando o débito é superior a 180.000 tuplos gerados por minuto. Esta deve-se, provavelmente, à camada adicional de virtualização ({\conts} sobre uma VM) que introduz \textit{overhead} suplementar.
+
+O gráfico da Figura \ref{fig:results-nos-baseline} não apresentam qualquer desvio do tempo de execução esperado. Visto isto, nos gráficos onde é introduzida a comunicação, caso os resultados se distanciem dos obtidos nos testes \textit{baseline}, conclui-se que a diferença se deve á emulação da rede virtual.
+
+\subsection{Variação do débito $D$}
+
+Observando a Figura \ref{fig:results-insertions} verifica-se que mantendo um número constante de nós o desvio exibe um incremento linear, de acordo com a equação (\ref{eq:operacoes}). Comparando os dois gráficos, observa-se que a utilização das duas tecnologias de virtualização testadas não modifica significativamente os resultados obtidos. Desse modo pode concluir-se que o fator que limita a fiabilidade da emulação tem o mesmo peso nos testes realizados nos dois ambientes de virtualização.
+
+\subsection{Variação do número de nós $N$}
+
+Na figura \ref{fig:results-nos} verifica-se que a partir de 32 nós o desvio assemelha-se a uma curva quadrática, semelhante á equação (\ref{eq:operacoes}). Em contraste, a Figura \ref{fig:vms-nos} não apresenta o mesmo comportamento, mantendo-se o desvio 
+quase nulo. Uma possível explicação deste resultado, é o \textit{overhead} suplementar introduzido devido aos {\conts} estarem a executar sobre uma máquina virtual. Essa arquitetura parece prejudicar a solução de {\conts} usada nos ambientes de {\cloud} para assegurar um nível superior de isolamento. Outra possível origem da disparidade dos dois resultados é uma virtualização de rede de qualidade inferior no caso do \textit{Docker Engine}.
+
+Conclui-se, com base nestes gráficos, que a solução de máquinas virtuais possui, neste ambiente, uma escalabilidade superior quando o número de nós aumenta.Tal constitui, aparentemente, um resultado surpreendente e contrário à intuição geralmente prevalente na literatura.

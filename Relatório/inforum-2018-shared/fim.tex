@@ -1,13 +1,56 @@
 
 \section{Conclusões e trabalho futuro}
 
-Dada a complexidade e as dificuldades associadas ao teste de
-protocolos distribuídos para controlo de equipamentos de rede num
-contexto real, é comum recorrer a emulação para teste dos mesmos. Os
-primeiros emuladores recorriam a máquinas reais, interligadas através
-de um sistema de emulação do tempo de trânsito e da perda de pacotes
-numa rede real [ModelNet].
 
-\discutir{\textbf{DEPOIS VÊ SE CONCORDAS}}
 
-Houveram alguns precalços nomeadamente na utilização do motor de base de dados, pois sabendo que os \textit{benchmarks} são testes de performance, há uma necessidade de otimizar o motor de base de dados de forma a introduzir o menor \textit{overhead} possível, pois o objectivo em questão é verificar a performance consoante as variáveis mencionadas em \ref{benchs}. Foi discutido o aumento do número de \textit{threads} de escrita na base de dados visando melhorias ao nível do paralelismo, mas a ideia acabou por ser descartada, devido ao número de núcleos lógicos atribuído a cada máquina virtual. O maior imprevisto que pode ser tido em conta num trabalho futuro, surgiu aquando dos testes nas máquinas virtuais, em que, na fase de sincronização (ver \ref{func}), cada máquina virtual demorava bastante tempo (por volta de 5 minutos) a abrir as conexões para as restantes instâncias. Após algum aprofundamento da questão, chegou-se à conclusão de que estava relacionado com a resolução de nomes das restantes máquinas. Foram implementadas algumas possíveis soluções, tais como, desativar a resolução de nomes do motor da base de dados e adicionar os endereços e os nomes ao ficheiro de resolução de nomes utilizado pelo sistema operativo, mas em nenhuma das soluções se verificou uma melhoria na situação em questão. De qualquer das formas esta questão não foi mais aprofundada pois a fase que dita a performance de um determinado teste (ciclo principal, ver \ref{func}) não é influenciada.
+%Surgiram alguns percalços nomeadamente na utilização do motor de base de dados, pois sabendo que os \textit{benchmarks} são testes de performance, há uma necessidade de otimizar o motor de base de dados de forma a introduzir o menor \textit{overhead} possível, pois o objectivo em questão é verificar a performance da emulação do sistema consoante as variáveis mencionadas em \ref{benchs} e evitar um \textit{bottleneck} comum entre os testes. 
+
+%Foi discutido o aumento do número de \textit{threads} de escrita na base de dados visando melhorias ao nível do paralelismo, mas a ideia acabou por ser descartada, devido ao número de núcleos lógicos atribuído a cada máquina virtual ser único a partir de 24 instâncias. O maior imprevisto que pode ser tido em conta num trabalho futuro, surgiu aquando dos testes nas máquinas virtuais, em que, na fase de sincronização (ver \ref{func}), cada máquina virtual demorava bastante tempo (por volta de 5 minutos) a establecer as conexões para as restantes instâncias. Após algum aprofundamento da questão, chegou-se à conclusão de que estava relacionado com a resolução de nomes das restantes máquinas. Foram implementadas algumas possíveis soluções, tais como, desativar a resolução de nomes do motor da base de dados e adicionar os endereços e os nomes ao ficheiro de resolução de nomes utilizado pelo sistema operativo, mas em nenhuma das soluções se verificou uma melhoria na situação em questão. De qualquer das formas esta questão não foi mais aprofundada pois a fase que dita a performance de um determinado teste (ciclo principal, ver \ref{func}) não é influenciada.
+
+%Surgiram também percalços relativamente á fase de sincronização do sistema, visto que a implementação inicial permitia que instâncias começassem a executar o seu ciclo principal sem que as outras estivessem no final da fase de sincronização. Visto isto, foi implementada uma solução que emula um \textit{filesystem} partilhado entre as várias instâncias (a tabela de sincronização do \textit{master node}).
+
+
+
+Neste projeto foram avaliadas duas soluções de emulação de sistemas distribuídos escaláveis. 
+Em ambos os casos foi testada a eficiência da implementação da rede virtual através de testes 
+que simulavam uma troca intensiva de mensagens pela rede. 
+
+No ambiente de testes usado, verificou-se um comportamento semelhante das duas soluções de
+virtualização quando não se utiliza a emulação da rede. Em contrapartida, quando esta emulação
+é usada, as VMs têm um desempenho superior quando o número de nós aumenta. A explicação deste resultado
+necessita de ser aprofundada, mas tal não nos impede de retirar desde já várias conclusões imediatas.
+
+Para começar, é importante frisar que o desenvolvimento do projeto provou ser mais ágil na plataforma Docker. 
+Em contraste, no ambiente de VMs foi necessário criar vários \textit{scripts} auxiliares para
+automatizar o processo de instalação e de realização dos testes.
+
+No decorrer do desenvolvimento foram estudadas e testadas várias ferramentas disponibilizadas pelas plataformas, 
+como por exemplo Docker Swarm, Docker Compose, bem como o sistema de operação 
+Photon OS da VMWare. 
+No entanto, estas ferramentas não foram utilizadas pois foi possível alcançar um controlo mais fino através de soluções
+específicas desenvolvidas por nós.
+
+Surgiram obstáculos relativos á utilização do MySQL devido á natureza  ACID
+das transações, o que provocou um \textit{bottleneck} na utilização do disco.
+Foi discutido o aumento do número de \textit{threads} de escrita na base de dados visando melhorias do desempenho. No entanto,
+a ideia foi descartada 
+devido ao facto de que o número de \textit{threads} total ser já consideravelmente maior que o número de núcleos do processador. 
+Visto que a persistência da base de dados não era um fator importante, 
+foi utilizado um \textit{ramdisk} com o objetivo de remover este \textit{bottleneck}.
+
+Um outro imprevisto surgiu na fase de sincronização das máquinas virtuais que
+demorava cerca de 40 vezes mais do que no 
+Docker, devido a problemas na resolução de nomes.
+Este imprevisto resultou no atraso da obtenção de resultados na fase mais crítica do trabalho.
+
+Existe lugar para trabalho futuro imediato, nomeadamente testar os {\conts} sobre PhotonOS
+e sem VM intermédia. Estes testes permitirão aprofundar a origem do \textit{overhead} suplementar verificado,
+assim como aclarar a problemática da viabilidade da plataforma Docker com ou sem isolamento forte.
+Relativamente às ferramentas desenvolvidas, a documentação das mesmas deve ser melhorada antes de as
+disponibilizarmos publicamente. Adicionalmente, a bateria de testes poderá também ser alargada de modo a
+clarificar o comportamento do sistema quando o desvio do tempo de execução começa a aumentar.
+
+Tal como alertados pelos orientadores, a investigação em sistemas reveste-se de inúmeros obstáculos
+e problemas concretos a resolver, antes de se chegarem a conclusões credíveis e verificáveis publicamente
+sobre o comportamento dos sistemas, o que foi para nós algo
+completamente novo.

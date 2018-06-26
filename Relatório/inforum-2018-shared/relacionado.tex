@@ -1,5 +1,36 @@
 
-\section{Trabalho relacionado} \label{relac}
+\section{Trabalho relacionado}
+\label{relacionado}
 
-{ \color{blue} Apresentar outros estudos assim como técnicas usadas
-fazer referência breve a ModelNet, PlanetLab, Mininet, ... estudos parecidos}
+A tecnologia da virtualização está em constante desenvolvimento, e o amadurecimento da tecnologia de conteinerização
+foi acompanhado de muitos estudos comparativos entre a mesma e a tecnologia, mais madura, de máquinas virtuais.
+No entanto, a maioria desses estudos senão todos, focam-se na análise comparativa do desempenho de ambas as tecnologias,
+utilizando \textit{benchmarks} que avaliam, por exemplo, os custos da escrita em disco, 
+da compressão de ficheiros, do desempenho de algoritmos no consumo da CPU, da gestão da memória e
+seu dinamismo, do acesso à rede, etc.  procurando sempre realizar a comparação focando-se num recurso isolado e usando aplicações
+centralizadas ou quase sempre centralizadas.
+
+São exemplos destes estudos os seguintes: ????????
+
+São também comuns comparações entre a execução de aplicações em modo nativo, directamente sobre o
+hardware, com as mesmas aplicações a executarem em máquinas virtuais, como por exemplo os estudos referidos em  \cite{7095802}. ??????
+........ No entanto este tipo de comparação não se adequa aos nossos objectivos, pois a comparação deveria
+incidir sobre o comportamento de sistemas distribuídos escaláveis, o que exige o uso de múltiplos nós.
+
+Existe uma tradição de utilização de {\conts} suportados directamente no sistema Linux para emulação de
+redes. O exemplo mais conhecido é o Mininet~\cite{Lantz:2010:NLR:1868447.1868466}, cuja adequação e escalabilidade tem sido bastante
+estudada~\cite{Handigol:2012:RNE:2413176.2413206}. No entanto, este sistema tem diferenças 
+relativamente aos objectivos do nosso estudo. Por um lado, o sistema depende directamente de módulos
+no Kernel do Linux que implementem \emph{switches} virtuais controlados directamente por OpenFlow.
+Desta forma ficamos limitados a um único tipo de \emph{control plane}, isto é, um que se baseie em
+SDN implementada com o protocolo OpenFlow. Por outro lado, tal como no nosso caso, os
+estudos não abrangem a problemática do isolamento, isto é, não avaliam comparativamente
+a utilização de {\conts} com ou sem VM de suporte. Adicionalmente, o ambiente de orquestração das
+componentes da rede emulada é específico e provavelmente menos geral e flexível que o disponibilizado pela
+plataforma Docker.
+
+
+
+
+
+
