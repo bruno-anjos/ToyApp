@@ -1,6 +1,7 @@
 #!/bin/bash
 
 echo "Starting mysql service"
+echo "port = ${4}" >> /etc/mysql/my.cnf
 
 chmod 777 /var/lib/mysql
 

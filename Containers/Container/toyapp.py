@@ -13,7 +13,7 @@ from collections import deque
 # Constants used throught the program
 CONST_USAGE = """Usage: python3 toyapp.py | insertions_per_minute | max_insertions |
                      number_of_clients | starting_ip | batch_size"""
-CONST_DB_HOST = "localhost"
+CONST_DB_HOST = "127.0.0.1"
 CONST_DB_USER = "username"
 CONST_DB_PASSWORD = "password"
 CONST_DB_NAME = "dummy_db"
@@ -23,6 +23,7 @@ CONST_DB_NUM_COL_NAME = "num"
 CONST_DB_SYNCED_COL_NAME = "synced"
 CONST_DB_CONNECT_TIMEOUT = 4
 CONST_ARG_FILE_NAME = "args.txt"
+CONST_DEFAULT_PORT = 9900
 
 CONST_MIN_NUM = 1
 CONST_MAX_NUM = 100
@@ -44,7 +45,7 @@ def main(argv):
     if len(argv) < 5:
         print("reading args from file")
         argv = readArgsFromFile()
-   
+
     if len(argv) < 5:
         print(CONST_USAGE)
         sys.exit(1)
@@ -52,33 +53,32 @@ def main(argv):
     elif len(argv) == 5:
         DEBUG_MODE = False
         BASELINE_MODE = False
-        
+
 
 #    elif len(argv) > 5:
 #        for arg in argv:
 #            if str(arg) == "debug":
 #                DEBUG_MODE = True
 #                print("debug mode ON")
-#                
+#
 #            if str(arg) == "baseline":
 #                BASELINE_MODE = True
 #                print("Baseline mode ON")
-    
+
 
     # Get starting parameters
     insertPerMin = int(argv[0])
     maxInsertions = int(argv[1])
     numClients = int(argv[2])
-    startingIP = ipaddress.ip_address(argv[3])
+    thisPort = int(argv[3])
     batchSize = int(argv[4])
 
     if DEBUG_MODE:
         print("[DEBUG] Starting main loop")
 
-    mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize)
+    mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize)
 
     sys.exit(0)
-
 
 
 def readArgsFromFile():
@@ -93,7 +93,7 @@ def readArgsFromFile():
     return args
 
 
-# Converts @param timesPerMin to how much time to wait in order to 
+# Converts @param timesPerMin to how much time to wait in order to
 # have @param timesPerMin happen that many times per minute
 def getSleepTime(timesPerMin):
     return 60 / int(timesPerMin)
@@ -101,7 +101,7 @@ def getSleepTime(timesPerMin):
 
 # main script loop, runs until it has inserted @arg maxInsertions tuples
 # every x seconds will insert a tuple into the database
-def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
+def mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize):
     sleepTime = getSleepTime(insertPerMin)
 
     if DEBUG_MODE:
@@ -109,27 +109,27 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     counter = 0
 
-    db = setupDatabase(CONST_DB_HOST)
+    db = setupDatabase(thisPort)
     master_node = False
 
-    if get_ip_address() == startingIP:
+    if CONST_DEFAULT_PORT == thisPort:
         print("[DEBUG] This is master node")
         master_node = True
         masterDB = db
     else:
-        print("[DEBUG] Master node is " + str(startingIP))
-        masterDB = setupDatabase(startingIP)
+        print("[DEBUG] Master node is " + str(thisPort))
+        masterDB = setupDatabase(CONST_DEFAULT_PORT)
 
-    ip_list = build_ip_list(startingIP, numClients)
-    shuffle(ip_list)
+    port_list = build_port_list(thisPort, numClients)
+    shuffle(port_list)
 
-    print("IP LIST:")
-    for ip in ip_list:
-        print(str(ip))
+    print("PORT LIST:")
+    for port in port_list:
+        print(str(port))
 
     startTime = time.time()
 
-    remote_dbs = init_db_connections(numClients, ip_list)
+    remote_dbs = init_db_connections(port_list)
 
     if DEBUG_MODE:
         print("[DEBUG] Remote connections: " + str(remote_dbs))
@@ -139,7 +139,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     if DEBUG_MODE:
         print("[DEBUG] Starting sync phase...")
 
-    sync_dbs(masterDB, numClients)
+    sync_dbs(masterDB, numClients, thisPort)
 
     if DEBUG_MODE:
         print("[DEBUG] Synced.")
@@ -161,6 +161,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
+        print("Will insert " + str(key) + " and " + str(value))
         insertIntoDB(db.cursor(), [(key, value)])
 
 
@@ -184,7 +185,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
         timeTook = afterInsertionTime - insertionTime
 
         timeAvailable = startTime + ((counter + 1) * sleepTime) - afterInsertionTime
-            
+
         if timeAvailable < 0:
             if DEBUG_MODE:
                 print("[DEBUG] can't keep up!, late by " + str(timeAvailable) + " ms")
@@ -201,6 +202,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     if len(queuedInserts) > 0:
         for rdb in remote_dbs:
+            print("Inserting remotely in " + str(rdb))
             insertIntoDB(rdb.cursor(), queuedInserts)
 
     if DEBUG_MODE:
@@ -212,6 +214,10 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     startTime = time.time()
 
     if not BASELINE_MODE:
+        cursor = db.cursor()
+        cursor.execute("select * from dummy_table")
+        for row in cursor.fetchall():
+            print(str(row))
         while getRowsInDB(db.cursor()) != maxInsertions * numClients:
             print("expected: " + str(maxInsertions * numClients))
             print("have: " + str(getRowsInDB(db.cursor())))
@@ -219,7 +225,7 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
 
     spentWaitingForOthers = time.time() - startTime
 
-    closeConnections(remote_dbs, masterDB , master_node)
+    closeConnections(remote_dbs, masterDB , master_node, thisPort)
 
     endTime = time.time()
 
@@ -231,15 +237,16 @@ def mainLoop(insertPerMin, maxInsertions, numClients, startingIP, batchSize):
     localCursor = db.cursor()
     average, rowCount = getAverage(localCursor)
 
-    writeStatsToFile(runningTime, average , rowCount , getDatabaseSize(localCursor) , get_ip_address(), syncTime, desyncTime , spentWaitingForOthers)
+    writeStatsToFile(runningTime, average, rowCount, getDatabaseSize(localCursor), thisPort, syncTime, desyncTime, spentWaitingForOthers)
 
     localCursor.close()
     db.close()
 
+
 def getRowsInDB(cursor):
     cursor.execute("SELECT count(*) FROM " + CONST_DB_TABLENAME)
     return cursor.fetchone()[0]
-     
+
 
 # Returns a hash using SHA256 algorithm and the current UNIX timestamp
 # plus a random float number to add even more randomness to the timestamp
@@ -269,9 +276,9 @@ def insertIntoDB(cursor, values):
 def getAverage(cursor):
     cursor.execute("SELECT SUM(" + CONST_DB_NUM_COL_NAME + "), COUNT(" + CONST_DB_NUM_COL_NAME + ") FROM " + CONST_DB_TABLENAME)
     res = cursor.fetchone()
-    
+
     sum_col = int(res[0])
-    
+
     counter = res[1]
     avg = sum_col / counter
 
@@ -318,24 +325,27 @@ def writeStatsToFile(runningTime, avg , rowCount, sizeDB, IP, syncTime, desyncTi
 
     statsFile.close()
 
+
 # Tries connection to a DB in IP
-def setupDatabase(ip):
+def setupDatabase(port):
     success = False
     db = None
     while not success:
         try:
             if DEBUG_MODE:
-                print("[DEBUG] Will try to connect to " + str(ip))
-            db = MySQLdb.connect(host=str(ip),
+                print("[DEBUG] Will try to connect to " + str(CONST_DB_HOST) + " on port " + str(port))
+            db = MySQLdb.connect(host=CONST_DB_HOST,
                                  user=CONST_DB_USER,
                                  passwd=CONST_DB_PASSWORD,
                                  db=CONST_DB_NAME,
-                                 connect_timeout=CONST_DB_CONNECT_TIMEOUT)
+                                 connect_timeout=CONST_DB_CONNECT_TIMEOUT,
+                                 port=port)
             db.autocommit(True)
             success = True
-        except MySQLdb.OperationalError:
+        except MySQLdb.OperationalError as e:
             if DEBUG_MODE:
-                print("[DEBUG] Failed to connect to " + str(ip))
+                print("[DEBUG] Failed to connect to " + str(port))
+                print(e)
             time.sleep(2)
             continue
 
@@ -343,41 +353,41 @@ def setupDatabase(ip):
 
 
 # Starts connections to the other clients databases and stores the DBs in a list
-def init_db_connections(numClients, ip_list):
+def init_db_connections(port_list):
     remote_dbs = []
 
-    for ip in ip_list:
-        db = setupDatabase(ip)
+    for port in port_list :
+        db = setupDatabase(port)
         remote_dbs.append(db)
 
     return remote_dbs
 
 
 # Builds a list with the other clients IPs (this only works based on an incremental IP system)
-def build_ip_list(startingIP, numClients):
-    localIP = get_ip_address()
-    ip_list = []
+def build_port_list(port, numClients):
+    localPort = port
+    port_list = []
 
     # Inserts all IPs except own IP
     for i in range(0, numClients):
 
         if DEBUG_MODE:
-            print("[DEBUG] startingIP + i: " + str(startingIP + i))
-            print("[DEBUG] localIP: " + str(localIP))
+            print("[DEBUG] startingPort + i: " + str(port + i))
+            print("[DEBUG] localPort: " + str(localPort))
 
-        if str(startingIP + i) == str(localIP):
+        if str(CONST_DEFAULT_PORT + i) == str(localPort):
             continue
         else:
-            ip_list.append(startingIP + i)
+            port_list.append(CONST_DEFAULT_PORT + i)
 
-    return ip_list
+    return port_list
 
 
-def closeConnections(remote_dbs, masterDB , master_node):
+def closeConnections(remote_dbs, masterDB , master_node, port):
 
     synced = False
 
-    deleteString = "DELETE FROM " + CONST_DB_SYNCED_TABLENAME + " WHERE " + CONST_DB_SYNCED_COL_NAME + " = " + "\'" + str(get_ip_address()) + "\'"
+    deleteString = "DELETE FROM " + CONST_DB_SYNCED_TABLENAME + " WHERE " + CONST_DB_SYNCED_COL_NAME + " = " + "\'" + str(port) + "\'"
 
     cursor = masterDB.cursor()
     cursor.execute(deleteString)
@@ -409,12 +419,12 @@ def closeConnections(remote_dbs, masterDB , master_node):
 
 
 # Syncs the clients to guarantee that all the databases are initiated
-def sync_dbs(masterDB, numClients):
+def sync_dbs(masterDB, numClients, port):
     synced = False
 
     # Query used to update the synced value in remote databases
     insertString = "INSERT INTO " + CONST_DB_SYNCED_TABLENAME + " VALUES "
-    insertString += ("(\"" + str(get_ip_address()) + "\", " + str(1) + ")")
+    insertString += ("(\"" + str(port) + "\", " + str(1) + ")")
 
     # Guarantees transaction isolation level allows the correct read
     cursor = masterDB.cursor()
@@ -433,34 +443,6 @@ def sync_dbs(masterDB, numClients):
             synced = True
         else:
             time.sleep(2)
-
-
-# Gets own IP address
-def get_ip_address():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-
-        s.connect(("8.8.8.8", 80))
-        ip = s.getsockname()[0]
-
-        s.close()
-
-    except OSError:
-
-        if DEBUG_MODE:
-            print("[DEBUG] got OSError")
-
-        ip = '127.0.0.1'
-        output = os.popen('ip addr show').read().split("inet ")
-        for s in output:
-            index = s.find("/")
-            if index < 16 and index > 0:
-                ip = s[0:index]
-                if(ip != '127.0.0.1'):
-                    break
-    if DEBUG_MODE:
-        print("[DEBUG] Host IP: " + str(ip))
-    return ipaddress.ip_address(ip)
 
 
 # conventional stuff, dont ask me.
