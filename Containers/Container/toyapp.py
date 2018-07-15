@@ -113,19 +113,17 @@ def mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize):
     master_node = False
 
     if CONST_DEFAULT_PORT == thisPort:
-        print("[DEBUG] This is master node")
+        if DEBUG_MODE:
+            print("[DEBUG] This is master node")
         master_node = True
         masterDB = db
     else:
-        print("[DEBUG] Master node is " + str(thisPort))
+        if DEBUG_MODE:
+            print("[DEBUG] Master node is " + str(thisPort))
         masterDB = setupDatabase(CONST_DEFAULT_PORT)
 
     port_list = build_port_list(thisPort, numClients)
     shuffle(port_list)
-
-    print("PORT LIST:")
-    for port in port_list:
-        print(str(port))
 
     startTime = time.time()
 
@@ -161,7 +159,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize):
 
         key = getHash()
         value = random.randint(CONST_MIN_NUM, CONST_MAX_NUM)
-        print("Will insert " + str(key) + " and " + str(value))
+        if DEBUG_MODE:
+            print("Will insert " + str(key) + " and " + str(value))
         insertIntoDB(db.cursor(), [(key, value)])
 
 
@@ -202,7 +201,8 @@ def mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize):
 
     if len(queuedInserts) > 0:
         for rdb in remote_dbs:
-            print("Inserting remotely in " + str(rdb))
+            if DEBUG_MODE:
+                print("Inserting remotely in " + str(rdb))
             insertIntoDB(rdb.cursor(), queuedInserts)
 
     if DEBUG_MODE:
@@ -215,9 +215,6 @@ def mainLoop(insertPerMin, maxInsertions, numClients, thisPort, batchSize):
 
     if not BASELINE_MODE:
         cursor = db.cursor()
-        cursor.execute("select * from dummy_table")
-        for row in cursor.fetchall():
-            print(str(row))
         while getRowsInDB(db.cursor()) != maxInsertions * numClients:
             print("expected: " + str(maxInsertions * numClients))
             print("have: " + str(getRowsInDB(db.cursor())))
